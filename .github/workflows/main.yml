@@ -1,0 +1,27 @@
+name: .NET Actions
+
+on:
+  push:
+    branches:
+        - master
+        - feature/*
+  pull_request:
+    branches:
+        - master
+        - feature/*
+
+jobs:
+  testing:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.101
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Run UnitTests
+      run: dotnet test --no-restore
