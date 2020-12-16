@@ -7,16 +7,19 @@ namespace Core.Domain
     public class Request
     {
         public int Id { get; set; }
-     
-        public string Description { get; set; }
         
-        public string Name { get; set; }
+        public int? CustomerId { get; set; }
+        public Customer Customer { get; set; }
         
-        public int? DateId { get; set; }
-        public RequestDate Date { get; set; }
+        public string Location { get; set; }
         
-        public bool IsOpen { get; set; }
+        public int? RequestDateId { get; set; }
+        public RequestDate RequestDate { get; set; }
         
-        public ICollection<RequestUser> LotusMembers { get; set; } = new List<RequestUser>();
+        public bool IsExam { get; set; }
+        
+        public LessonType LessonType { get; set; }
+        
+        public ICollection<User>? Instructors { get; set; }
     }
 }
