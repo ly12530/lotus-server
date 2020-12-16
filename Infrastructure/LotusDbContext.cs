@@ -15,7 +15,7 @@ namespace Infrastructure
 
             // Request
             modelBuilder.Entity<Request>().HasOne(request => request.RequestDate)
-                .WithOne(requestDate => requestDate.RequestUser);
+                .WithOne(requestDate => requestDate.Request);
         }
     }
 }

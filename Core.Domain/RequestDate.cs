@@ -11,6 +11,6 @@ namespace Core.Domain
         public DateTime EndDate { get; set; }
         
         public int? RequestId { get; set; }
-        public Request RequestUser { get; set; }
+        public Request Request { get; set; }
     }
 }
