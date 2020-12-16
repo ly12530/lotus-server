@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Domain
 {
@@ -8,6 +9,9 @@ namespace Core.Domain
 
         public string Name { get; set; }
 
-        [EmailAddress] public string EmailAddress { get; set; }
+        [EmailAddress] 
+        public string EmailAddress { get; set; }
+
+        public ICollection<Request> Requests { get; set; } = new List<Request>();
     }
 }

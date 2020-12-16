@@ -8,13 +8,13 @@ namespace Core.Domain
     {
         public int Id { get; set; }
         
-        public int? CustomerId { get; set; }
         public Customer Customer { get; set; }
+        public int? CustomerId { get; set; }
         
         public string Location { get; set; }
         
-        public int? RequestDateId { get; set; }
         public RequestDate RequestDate { get; set; }
+        public int? RequestDateId { get; set; }
         
         public bool IsExam { get; set; }
         
