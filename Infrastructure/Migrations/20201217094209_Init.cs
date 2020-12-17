@@ -23,20 +23,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RequestDates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestDates", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Requests",
                 columns: table => new
                 {
@@ -44,7 +30,8 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CustomerId = table.Column<int>(type: "integer", nullable: true),
                     Location = table.Column<string>(type: "text", nullable: false),
-                    RequestDateId = table.Column<int>(type: "integer", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsExam = table.Column<bool>(type: "boolean", nullable: false),
                     LessonType = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -57,12 +44,6 @@ namespace Infrastructure.Migrations
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Requests_RequestDates_RequestDateId",
-                        column: x => x.RequestDateId,
-                        principalTable: "RequestDates",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,8 +52,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserName = table.Column<string>(type: "text", nullable: true),
-                    EmailAddress = table.Column<string>(type: "text", nullable: true),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    EmailAddress = table.Column<string>(type: "text", nullable: false),
                     RequestId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -86,16 +67,19 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Customers",
+                columns: new[] { "Id", "EmailAddress", "Name" },
+                values: new object[,]
+                {
+                    { 1, "pieter@test.test", "Pieter" },
+                    { 2, "kek@double.you", "Jorik" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Requests_CustomerId",
                 table: "Requests",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Requests_RequestDateId",
-                table: "Requests",
-                column: "RequestDateId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_RequestId",
@@ -113,9 +97,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "RequestDates");
         }
     }
 }

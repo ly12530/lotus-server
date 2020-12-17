@@ -1,26 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using Core.Domain;
 
-namespace Core.Domain
+namespace RestApi.Models
 {
-    public class Request
+    public class NewRequestDTO
     {
-        public int Id { get; set; }
-        
-        public Customer Customer { get; set; }
         public int? CustomerId { get; set; }
         
+        [Required]
+        [MinLength(2)]
         public string Location { get; set; }
         
+        [Required]
         public DateTime StartDate { get; set; }
-
+        
+        [Required]
         public DateTime EndDate { get; set; }
         
+        [Required]
         public bool IsExam { get; set; }
         
+        [Required]
         public LessonType LessonType { get; set; }
-        
-        public ICollection<User>? Instructors { get; set; }
     }
 }

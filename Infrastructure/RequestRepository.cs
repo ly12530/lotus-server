@@ -17,14 +17,18 @@ namespace Infrastructure
 
         public IQueryable<Request> GetAllRequests()
         {
-            return _context.Requests
-                .Include(request => request.RequestDate);
+            return _context.Requests;
         }
 
         public async Task AddRequest(Request newRequest)
         {
             await _context.Requests.AddAsync(newRequest);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Request> GetRequestById(int id)
+        {
+            return await _context.Requests.SingleOrDefaultAsync(request => request.Id == id);
         }
     }
 }

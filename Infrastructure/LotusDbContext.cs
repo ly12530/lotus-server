@@ -7,7 +7,6 @@ namespace Infrastructure
     {
         public LotusDbContext(DbContextOptions<LotusDbContext> options) : base(options) { }
         public DbSet<Request> Requests { get; set; }
-        public DbSet<RequestDate> RequestDates { get; set; }
         
         public DbSet<Customer> Customers { get; set; }
 
@@ -25,10 +24,9 @@ namespace Infrastructure
 
             // Request
             modelBuilder.Entity<Request>().Property(request => request.Location).IsRequired();
-            modelBuilder.Entity<Request>().HasOne(request => request.RequestDate)
-                .WithOne(requestDate => requestDate.Request)
-                .OnDelete(DeleteBehavior.Cascade).IsRequired();
-            
+            modelBuilder.Entity<Request>().Property(request => request.StartDate).IsRequired();
+            modelBuilder.Entity<Request>().Property(request => request.EndDate).IsRequired();
+
             // User
             modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
             modelBuilder.Entity<User>().Property(user => user.EmailAddress).IsRequired();

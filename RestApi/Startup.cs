@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Core.DomainServices;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,7 +32,9 @@ namespace RestApi
         {
             services.AddDbContext<LotusDbContext>(options => options.UseNpgsql(
                 Configuration.GetConnectionString("Default")));
-            
+
+            services.AddScoped<IRequestRepository, RequestRepository>();
+
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "LOTUS RESTapi", Version = "v1"}); });
         }

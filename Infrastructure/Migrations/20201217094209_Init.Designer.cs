@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    [Migration("20201216140826_Init")]
+    [Migration("20201217094209_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,20 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            EmailAddress = "pieter@test.test",
+                            Name = "Pieter"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            EmailAddress = "kek@double.you",
+                            Name = "Jorik"
+                        });
                 });
 
             modelBuilder.Entity("Core.Domain.Request", b =>
@@ -51,6 +65,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<bool>("IsExam")
                         .HasColumnType("boolean");
 
@@ -61,35 +78,14 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("RequestDateId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("RequestDateId")
-                        .IsUnique();
-
-                    b.ToTable("Requests");
-                });
-
-            modelBuilder.Entity("Core.Domain.RequestDate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RequestDates");
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("Core.Domain.User", b =>
@@ -100,12 +96,14 @@ namespace Infrastructure.Migrations
                         .UseIdentityByDefaultColumn();
 
                     b.Property<string>("EmailAddress")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("RequestId")
                         .HasColumnType("integer");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -121,14 +119,7 @@ namespace Infrastructure.Migrations
                         .WithMany("Requests")
                         .HasForeignKey("CustomerId");
 
-                    b.HasOne("Core.Domain.RequestDate", "RequestDate")
-                        .WithOne("Request")
-                        .HasForeignKey("Core.Domain.Request", "RequestDateId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("Customer");
-
-                    b.Navigation("RequestDate");
                 });
 
             modelBuilder.Entity("Core.Domain.User", b =>
@@ -146,11 +137,6 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Domain.Request", b =>
                 {
                     b.Navigation("Instructors");
-                });
-
-            modelBuilder.Entity("Core.Domain.RequestDate", b =>
-                {
-                    b.Navigation("Request");
                 });
 #pragma warning restore 612, 618
         }

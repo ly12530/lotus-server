@@ -8,5 +8,6 @@ namespace Core.DomainServices
     {
         IQueryable<Request> GetAllRequests();
         Task AddRequest(Request newRequest);
+        Task<Request> GetRequestById(int id);
     }
 }
