@@ -10,6 +10,7 @@ namespace RestApi.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;

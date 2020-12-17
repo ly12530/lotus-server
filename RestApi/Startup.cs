@@ -36,7 +36,20 @@ namespace RestApi
             services.AddScoped<IRequestRepository, RequestRepository>();
 
             services.AddControllers();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "LOTUS RESTapi", Version = "v1"}); });
+            services.AddSwaggerGen(c => 
+                { c.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "LOTUS RESTapi",
+                        Description = "A RESTful backend API for the LOTUS 2021 project",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "GitHub",
+                            Email = String.Empty,
+                            Url = new Uri("https://github.com/Crypit-Coders/Inc")
+                        }
+                    }); 
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,15 +59,22 @@ namespace RestApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
+
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1");
+                c.InjectStylesheet("/css/custom.css");
+            });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
