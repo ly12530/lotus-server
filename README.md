@@ -1,5 +1,5 @@
 # lotus-server
-A RESTful backend api for the LOTUS 2021 project
+A RESTful backend API for the LOTUS 2021 project
 
 ## Requirements
 * .NET 5.0 (or later)
