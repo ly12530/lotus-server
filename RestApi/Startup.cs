@@ -44,9 +44,9 @@ namespace RestApi
                         Description = "A RESTful backend API for the LOTUS 2021 project",
                         Contact = new OpenApiContact
                         {
-                            Name = "GitHub",
+                            Name = "Crypit",
                             Email = String.Empty,
-                            Url = new Uri("https://github.com/Crypit-Coders/Inc")
+                            Url = new Uri("https://github.com/Crypit-Coders-Inc")
                         }
                     }); 
                 });
