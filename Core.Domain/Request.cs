@@ -21,6 +21,8 @@ namespace Core.Domain
         
         public LessonType LessonType { get; set; }
         
+        public bool IsOpen { get; set; }
+        
         public ICollection<User>? Instructors { get; set; }
     }
 }

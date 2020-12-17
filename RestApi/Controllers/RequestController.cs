@@ -51,7 +51,7 @@ namespace RestApi.Controllers
             {
                 var requestToCreate = new Request
                 {
-                    CustomerId = 1, // TODO FIXME Plz ;(
+                    CustomerId = requestDto.CustomerId,
                     Location = requestDto.Location,
                     StartDate = requestDto.StartDate,
                     EndDate = requestDto.EndDate,
