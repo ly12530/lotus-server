@@ -3,18 +3,19 @@ using Xunit;
 
 namespace Core.Domain.Test
 {
-    public class UnitTest1
+    public class RequestTest
     {
         [Fact]
-        public void RequestShouldHaveCustomerLocationStartAndEndDateIsExamLessonTypeAndIsOpen()
+        public void Request_Should_Create_The_Right_Way()
         {
             // Arrange
             var customer = new Customer();
             var location = "Breda";
             var startDate = new DateTime();
             var endDate = new DateTime().AddMonths(3);
-            var lessonType = Domain.LessonType.Normal;
-            
+            var lessonType = LessonType.Normal;
+            var isExam = true;
+
             // Act
             var request = new Request
             {
@@ -22,40 +23,28 @@ namespace Core.Domain.Test
                 Location = location,
                 StartDate = startDate,
                 EndDate = endDate,
+                IsExam = isExam,
                 LessonType = lessonType
             };
-            
+
+            // Assert
             Assert.Equal(customer, request.Customer);
             Assert.Equal(location, request.Location);
             Assert.Equal(startDate, request.StartDate);
             Assert.Equal(endDate, request.EndDate);
-            Assert.False(request.IsExam);
+            Assert.False(request.IsOpen);
+            Assert.True(request.IsExam);
             Assert.Equal(lessonType, request.LessonType);
         }
 
         [Fact]
-        public void FailsIfExamIsTrueAtCreation()
+        public void IsOpen_Should_be_False_At_Creation()
         {
-            // Arrange
-            var exceptionThrown = false;
-            
-            // Act
-            try
-            {
-                var request = new Request {IsExam = true};
-
-                if (request.IsExam)
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-            catch
-            {
-                exceptionThrown = true;
-            }
+            // Arrange/Act
+            var request = new Request();
 
             // Assert
-            Assert.True(exceptionThrown);
+            Assert.False(request.IsOpen);
         }
     }
 }
