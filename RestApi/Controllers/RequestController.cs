@@ -84,6 +84,12 @@ namespace RestApi.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        ///     Update the IsOpen attribute of the Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <param name="requestToChange">Body with the attributes to change of the Request</param>
+        /// <returns>Request with updated values</returns>
         [HttpPut("{id}/isopen")]
         public async Task<ActionResult<RequestDTO>> UpdateIsOpen(int id, [FromBody]PutIsOpenRequestDTO requestToChange)
         {
@@ -110,6 +116,13 @@ namespace RestApi.Controllers
 
             return Ok(resultToReturn);
         }
+        
+        /// <summary>
+        ///     Update the Start- and EndDate attributes of the Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <param name="requestToChange">Body with the attributes to change of the Request</param>
+        /// <returns>Request with updated values</returns>
         [HttpPut("{id}/dates")]
         public async Task<ActionResult<RequestDTO>> UpdateDate(int id, [FromBody]PutDateRequestDTO requestToChange)
         {
