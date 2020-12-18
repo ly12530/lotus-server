@@ -1,16 +1,6 @@
 name: .NET Actions
 
-on:
-  push:
-    branches:
-        - master
-        - dev
-        - feature/*
-  pull_request:
-    branches:
-        - master
-        - dev
-        - feature/*
+on: [push, pull_request]
 
 jobs:
   test:
@@ -27,7 +17,7 @@ jobs:
     - name: Run tests
       run: dotnet test
 
-  build:
+  migrations:
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/master'
@@ -40,5 +30,26 @@ jobs:
         dotnet-version: 5.0.101
     - name: Install dependencies
       run: dotnet restore
-    - name: Build application
-      run: dotnet build --configuration Release
+    - name: Setup EF Core
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet tool restore
+        dotnet ef database update -s RestApi/ -p Infrastructure/ -c LotusDbContext
+      env:
+        ASPNETCORE_ENVIRONMENT: Production
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: migrations
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.7.8
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+      env:
+        ASPNETCORE_ENVIROMENT: Production

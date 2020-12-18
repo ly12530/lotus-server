@@ -10,6 +10,7 @@ namespace RestApi.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
@@ -20,9 +21,9 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a list of all requests
+        ///     Get a list of all Requests
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of all Requests (open & closed)</returns>
         [HttpGet]
         public ActionResult<List<Request>> GetAll()
         {
@@ -32,10 +33,10 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a specific request by its id
+        ///     Get a specific Request by its id
         /// </summary>
-        /// <param name="id">Id of the request</param>
-        /// <returns></returns>
+        /// <param name="id">Id of the Request</param>
+        /// <returns>Request with the given id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Request>> GetOne(int id)
         {
@@ -44,6 +45,11 @@ namespace RestApi.Controllers
             return (result == null) ? NotFound() : Ok(result);
         }
 
+        /// <summary>
+        ///     Create a new request
+        /// </summary>
+        /// <param name="requestDto">Body with attributes of the Request</param>
+        /// <returns>Request which was created</returns>
         [HttpPost]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
