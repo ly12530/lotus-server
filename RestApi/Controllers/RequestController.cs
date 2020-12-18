@@ -46,6 +46,18 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
+        ///     Get a list of all Requests where IsOpen = true
+        /// </summary>
+        /// <returns>List of all Requests (open)</returns>
+        [HttpGet("isopen")]
+        public ActionResult<List<Request>> GetAllOpenRequests()
+        {
+            var result = _requestRepository.GetOpenRequests();
+
+            return Ok(result);
+        }
+
+        /// <summary>
         ///     Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>

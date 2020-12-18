@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 
@@ -11,5 +12,7 @@ namespace Core.DomainServices
         Task<Request> GetRequestById(int id);
         Task UpdateIsOpen(Request request);
         Task UpdateDate(Request request);
+        IEnumerable<Request> GetOpenRequests();
+
     }
 }

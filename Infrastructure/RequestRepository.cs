@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
@@ -30,6 +31,14 @@ namespace Infrastructure
         {
             return await _context.Requests.SingleOrDefaultAsync(request => request.Id == id);
         }
+
+        public IEnumerable<Request> GetOpenRequests()
+        {
+
+            return _context.Requests.Where(g => g.IsOpen);
+
+        }
+
 
         public async Task UpdateIsOpen(Request request)
         {
