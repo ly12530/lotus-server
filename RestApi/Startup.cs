@@ -30,6 +30,8 @@ namespace RestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            
             services.AddDbContext<LotusDbContext>(options => options.UseNpgsql(
                 Configuration.GetConnectionString("Default")));
 
@@ -72,6 +74,12 @@ namespace RestApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(c => c
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowCredentials());
 
             app.UseAuthorization();
             
