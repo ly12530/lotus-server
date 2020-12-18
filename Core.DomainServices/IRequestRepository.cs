@@ -9,5 +9,7 @@ namespace Core.DomainServices
         IQueryable<Request> GetAllRequests();
         Task AddRequest(Request newRequest);
         Task<Request> GetRequestById(int id);
+        Task UpdateIsOpen(Request request);
+        Task UpdateDate(Request request);
     }
 }

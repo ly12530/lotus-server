@@ -71,5 +71,52 @@ namespace RestApi.Controllers
 
             return BadRequest();
         }
+
+        [HttpPut("{id}/isopen")]
+        public async Task<ActionResult<RequestDTO>> UpdateIsOpen(int id, [FromBody]PutIsOpenRequestDTO requestToChange)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+
+            // Sanity Check
+            if ((request == null) || (id != requestToChange.Id))
+            {
+                return BadRequest();
+            }
+
+            if (requestToChange.IsOpen)
+            {
+                request.IsOpen = true;
+            }
+            if (!requestToChange.IsOpen)
+            {
+                request.IsOpen = false;
+            }
+
+            await _requestRepository.UpdateIsOpen(request);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+        }
+        [HttpPut("{id}/dates")]
+        public async Task<ActionResult<RequestDTO>> UpdateDate(int id, [FromBody]PutDateRequestDTO requestToChange)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+
+            // Sanity Check
+            if ((request == null) || (id != requestToChange.Id))
+            {
+                return BadRequest();
+            }
+            
+            request.StartDate = requestToChange.StartDate;
+            request.EndDate = requestToChange.EndDate;
+
+            await _requestRepository.UpdateDate(request);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+        }
     }
 }

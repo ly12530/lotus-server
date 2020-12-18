@@ -30,5 +30,16 @@ namespace Infrastructure
         {
             return await _context.Requests.SingleOrDefaultAsync(request => request.Id == id);
         }
+
+        public async Task UpdateIsOpen(Request request)
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDate(Request request)
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
