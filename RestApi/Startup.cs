@@ -79,7 +79,7 @@ namespace RestApi
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowAnyOrigin()
-                .AllowCredentials());
+            );
 
             app.UseAuthorization();
             
