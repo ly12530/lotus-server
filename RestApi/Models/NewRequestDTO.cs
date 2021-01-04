@@ -7,7 +7,7 @@ namespace RestApi.Models
     public class NewRequestDTO
     {
         public int? CustomerId { get; set; }
-        
+
         [Required]
         [MinLength(2)]
         public string Location { get; set; }
