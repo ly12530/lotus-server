@@ -45,7 +45,7 @@ namespace Infrastructure
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateDate(Request request)
+        public async Task UpdateTime(Request request)
         {
             await _context.SaveChangesAsync();
         }

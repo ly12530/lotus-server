@@ -13,10 +13,12 @@ namespace Core.Domain
         
         public string Location { get; set; }
         
-        public DateTime StartDate { get; set; }
-
-        public DateTime EndDate { get; set; }
+        public DateTime Date { get; set; }
         
+        public string StartTime { get; set; }
+        
+        public string EndTime { get; set; }
+
         public bool IsExam { get; set; }
         
         public LessonType LessonType { get; set; }

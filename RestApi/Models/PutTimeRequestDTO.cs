@@ -6,16 +6,17 @@ using System.Threading.Tasks;
 
 namespace RestApi.Models
 {
-    public class PutDateRequestDTO
+    public class PutTimeRequestDTO
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        [RegularExpression("^(\\d{2}):(\\d{2})$")]
+        public string StartTime { get; set; }
 
         [Required]
-        public DateTime EndDate { get; set; }
-
+        [RegularExpression("^(\\d{2}):(\\d{2})$")]
+        public string EndTime { get; set; }
     }
 }

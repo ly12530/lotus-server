@@ -74,8 +74,9 @@ namespace RestApi.Controllers
                 {
                     CustomerId = requestDto.CustomerId,
                     Location = requestDto.Location,
-                    StartDate = requestDto.StartDate,
-                    EndDate = requestDto.EndDate,
+                    Date = requestDto.Date,
+                    StartTime = requestDto.StartTime,
+                    EndTime = requestDto.EndTime,
                     IsExam = requestDto.IsExam,
                     LessonType = requestDto.LessonType
                 };
@@ -127,7 +128,7 @@ namespace RestApi.Controllers
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
         [HttpPut("{id}/dates")]
-        public async Task<ActionResult<RequestDTO>> UpdateDate(int id, [FromBody]PutDateRequestDTO requestToChange)
+        public async Task<ActionResult<RequestDTO>> UpdateTime(int id, [FromBody]PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
@@ -137,10 +138,10 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
             
-            request.StartDate = requestToChange.StartDate;
-            request.EndDate = requestToChange.EndDate;
+            request.StartTime = requestToChange.StartTime;
+            request.EndTime = requestToChange.EndTime;
 
-            await _requestRepository.UpdateDate(request);
+            await _requestRepository.UpdateTime(request);
 
             var resultToReturn = request;
 
