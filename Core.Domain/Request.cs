@@ -12,8 +12,6 @@ namespace Core.Domain
 
         public Address Address { get; set; }
 
-        //Todo Location weg halen, als het op de front-end kant gelukt is om address toe te passen
-        public string Location { get; set; }
         public DateTime Date { get; set; }
 
         public string StartTime { get; set; }

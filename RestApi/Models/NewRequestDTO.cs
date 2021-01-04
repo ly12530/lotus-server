@@ -8,8 +8,6 @@ namespace RestApi.Models
     {
         public int? CustomerId { get; set; }
 
-        [Required] [MinLength(2)] public string Location { get; set; }
-
         [Required] public NewAddressDTO Address { get; set; }
 
         [Required] public DateTime Date { get; set; }
