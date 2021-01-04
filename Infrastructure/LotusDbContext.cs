@@ -7,7 +7,7 @@ namespace Infrastructure
     {
         public LotusDbContext(DbContextOptions<LotusDbContext> options) : base(options) { }
         public DbSet<Request> Requests { get; set; }
-        
+
         public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +27,7 @@ namespace Infrastructure
             modelBuilder.Entity<Request>().Property(request => request.Date).IsRequired();
             modelBuilder.Entity<Request>().Property(request => request.StartTime).IsRequired();
             modelBuilder.Entity<Request>().Property(request => request.EndTime).IsRequired();
+            modelBuilder.Entity<Request>().OwnsOne(request => request.Address);
 
             // User
             modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
