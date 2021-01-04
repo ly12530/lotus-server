@@ -25,9 +25,8 @@ namespace RestApi.Controllers
         ///     Get a list of all Requests
         /// </summary>
         /// <returns>List of all Requests (open & closed)</returns>
-        /// https://exmaple.com/request
         [HttpGet]
-        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen)
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
         {
             var result = _requestRepository.GetAllRequests();
 
@@ -40,6 +39,11 @@ namespace RestApi.Controllers
                         result = result.Where(res => !res.IsOpen);
                         break;
                 }
+            }
+
+            if (date != null)
+            {
+                result = result.Where(res => res.Date.Date == date.Value.Date);
             }
 
             return Ok(result);
