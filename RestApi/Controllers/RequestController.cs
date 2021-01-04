@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
@@ -24,10 +25,24 @@ namespace RestApi.Controllers
         ///     Get a list of all Requests
         /// </summary>
         /// <returns>List of all Requests (open & closed)</returns>
+        /// https://exmaple.com/request
         [HttpGet]
-        public ActionResult<List<Request>> GetAll()
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen)
         {
             var result = _requestRepository.GetAllRequests();
+
+            if (isOpen != null)
+            {
+                switch (isOpen)
+                {
+                    case true:
+                        result = result.Where(res => res.IsOpen);
+                        break;
+                    case false:
+                        result = result.Where(res => !res.IsOpen);
+                        break;
+                }
+            }
 
             return Ok(result);
         }
@@ -46,18 +61,6 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a list of all Requests where IsOpen = true
-        /// </summary>
-        /// <returns>List of all Requests (open)</returns>
-        [HttpGet("isopen")]
-        public ActionResult<List<Request>> GetAllOpenRequests()
-        {
-            var result = _requestRepository.GetOpenRequests();
-
-            return Ok(result);
-        }
-
-        /// <summary>
         ///     Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>
@@ -71,8 +74,9 @@ namespace RestApi.Controllers
                 {
                     CustomerId = requestDto.CustomerId,
                     Location = requestDto.Location,
-                    StartDate = requestDto.StartDate,
-                    EndDate = requestDto.EndDate,
+                    Date = requestDto.Date,
+                    StartTime = requestDto.StartTime,
+                    EndTime = requestDto.EndTime,
                     IsExam = requestDto.IsExam,
                     LessonType = requestDto.LessonType
                 };
@@ -118,13 +122,13 @@ namespace RestApi.Controllers
         }
         
         /// <summary>
-        ///     Update the Start- and EndDate attributes of the Request
+        ///     Update the Start- and EndTime attributes of the Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
         [HttpPut("{id}/dates")]
-        public async Task<ActionResult<RequestDTO>> UpdateDate(int id, [FromBody]PutDateRequestDTO requestToChange)
+        public async Task<ActionResult<RequestDTO>> UpdateTime(int id, [FromBody]PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
@@ -134,10 +138,10 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
             
-            request.StartDate = requestToChange.StartDate;
-            request.EndDate = requestToChange.EndDate;
+            request.StartTime = requestToChange.StartTime;
+            request.EndTime = requestToChange.EndTime;
 
-            await _requestRepository.UpdateDate(request);
+            await _requestRepository.UpdateTime(request);
 
             var resultToReturn = request;
 

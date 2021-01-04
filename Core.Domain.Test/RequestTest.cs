@@ -11,8 +11,9 @@ namespace Core.Domain.Test
             // Arrange
             var customer = new Customer();
             var location = "Breda";
-            var startDate = new DateTime();
-            var endDate = new DateTime().AddMonths(3);
+            var date = new DateTime();
+            var startTime = "11:50";
+            var endTime = "14:30";
             var lessonType = LessonType.Normal;
             var isExam = true;
 
@@ -21,8 +22,9 @@ namespace Core.Domain.Test
             {
                 Customer = customer,
                 Location = location,
-                StartDate = startDate,
-                EndDate = endDate,
+                Date = date,
+                StartTime = startTime,
+                EndTime = endTime,
                 IsExam = isExam,
                 LessonType = lessonType
             };
@@ -30,8 +32,9 @@ namespace Core.Domain.Test
             // Assert
             Assert.Equal(customer, request.Customer);
             Assert.Equal(location, request.Location);
-            Assert.Equal(startDate, request.StartDate);
-            Assert.Equal(endDate, request.EndDate);
+            Assert.Equal(date, request.Date);
+            Assert.Equal(startTime, request.StartTime);
+            Assert.Equal(endTime, request.EndTime);
             Assert.False(request.IsOpen);
             Assert.True(request.IsExam);
             Assert.Equal(lessonType, request.LessonType);
