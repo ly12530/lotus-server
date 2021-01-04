@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace RestApi
 {
@@ -36,8 +37,9 @@ namespace RestApi
                 Configuration.GetConnectionString("Default")));
 
             services.AddScoped<IRequestRepository, RequestRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c => 
                 { c.SwaggerDoc("v1", new OpenApiInfo
                     {
