@@ -25,16 +25,13 @@ namespace RestApi.Controllers
         ///     Get a list of all Requests
         /// </summary>
         /// <returns>List of all Requests (open & closed)</returns>
-        /// https://exmaple.com/request
         [HttpGet]
-        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen)
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
         {
             var result = _requestRepository.GetAllRequests();
 
-            if (isOpen != null)
-            {
-                switch (isOpen)
-                {
+            if (isOpen != null) {
+                switch (isOpen) {
                     case true:
                         result = result.Where(res => res.IsOpen);
                         break;
@@ -42,6 +39,11 @@ namespace RestApi.Controllers
                         result = result.Where(res => !res.IsOpen);
                         break;
                 }
+            }
+
+            if (date != null)
+            {
+                result = result.Where(res => res.Date.Date == date.Value.Date);
             }
 
             return Ok(result);
@@ -57,7 +59,7 @@ namespace RestApi.Controllers
         {
             var result = await _requestRepository.GetRequestById(id);
 
-            return (result == null) ? NotFound() : Ok(result);
+            return result == null ? (ActionResult<Request>) NotFound() : Ok(result);
         }
 
         /// <summary>
@@ -68,12 +70,20 @@ namespace RestApi.Controllers
         [HttpPost]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
+                var addressToCreate = new Address
+                {
+                    City = requestDto.Address.City,
+                    Number = requestDto.Address.Number,
+                    Postcode = requestDto.Address.Postcode,
+                    Street = requestDto.Address.Street
+                };
+
                 var requestToCreate = new Request
                 {
                     CustomerId = requestDto.CustomerId,
                     Location = requestDto.Location,
+                    Address = addressToCreate,
                     Date = requestDto.Date,
                     StartTime = requestDto.StartTime,
                     EndTime = requestDto.EndTime,
@@ -95,22 +105,20 @@ namespace RestApi.Controllers
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
         [HttpPut("{id}/isopen")]
-        public async Task<ActionResult<RequestDTO>> UpdateIsOpen(int id, [FromBody]PutIsOpenRequestDTO requestToChange)
+        public async Task<ActionResult<RequestDTO>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
             // Sanity Check
-            if ((request == null) || (id != requestToChange.Id))
-            {
+            if (request == null || id != requestToChange.Id) {
                 return BadRequest();
             }
 
-            if (requestToChange.IsOpen)
-            {
+            if (requestToChange.IsOpen) {
                 request.IsOpen = true;
             }
-            if (!requestToChange.IsOpen)
-            {
+
+            if (!requestToChange.IsOpen) {
                 request.IsOpen = false;
             }
 
@@ -120,7 +128,7 @@ namespace RestApi.Controllers
 
             return Ok(resultToReturn);
         }
-        
+
         /// <summary>
         ///     Update the Start- and EndTime attributes of the Request
         /// </summary>
@@ -128,16 +136,15 @@ namespace RestApi.Controllers
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
         [HttpPut("{id}/dates")]
-        public async Task<ActionResult<RequestDTO>> UpdateTime(int id, [FromBody]PutTimeRequestDTO requestToChange)
+        public async Task<ActionResult<RequestDTO>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
             // Sanity Check
-            if ((request == null) || (id != requestToChange.Id))
-            {
+            if (request == null || id != requestToChange.Id) {
                 return BadRequest();
             }
-            
+
             request.StartTime = requestToChange.StartTime;
             request.EndTime = requestToChange.EndTime;
 
