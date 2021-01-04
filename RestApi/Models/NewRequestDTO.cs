@@ -13,11 +13,16 @@ namespace RestApi.Models
         public string Location { get; set; }
         
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime Date { get; set; }
         
         [Required]
-        public DateTime EndDate { get; set; }
+        [RegularExpression("^(\\d{2}):(\\d{2})$")]
+        public string StartTime { get; set; }
         
+        [Required]
+        [RegularExpression("^(\\d{2}):(\\d{2})$")]
+        public string EndTime { get; set; }
+
         [Required]
         public bool IsExam { get; set; }
 

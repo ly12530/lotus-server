@@ -24,8 +24,9 @@ namespace Infrastructure
 
             // Request
             modelBuilder.Entity<Request>().Property(request => request.Location).IsRequired();
-            modelBuilder.Entity<Request>().Property(request => request.StartDate).IsRequired();
-            modelBuilder.Entity<Request>().Property(request => request.EndDate).IsRequired();
+            modelBuilder.Entity<Request>().Property(request => request.Date).IsRequired();
+            modelBuilder.Entity<Request>().Property(request => request.StartTime).IsRequired();
+            modelBuilder.Entity<Request>().Property(request => request.EndTime).IsRequired();
 
             // User
             modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
