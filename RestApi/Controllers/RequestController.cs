@@ -122,7 +122,7 @@ namespace RestApi.Controllers
         }
         
         /// <summary>
-        ///     Update the Start- and EndDate attributes of the Request
+        ///     Update the Start- and EndTime attributes of the Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
