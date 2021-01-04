@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
@@ -24,10 +25,24 @@ namespace RestApi.Controllers
         ///     Get a list of all Requests
         /// </summary>
         /// <returns>List of all Requests (open & closed)</returns>
+        /// https://exmaple.com/request
         [HttpGet]
-        public ActionResult<List<Request>> GetAll()
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen)
         {
             var result = _requestRepository.GetAllRequests();
+
+            if (isOpen != null)
+            {
+                switch (isOpen)
+                {
+                    case true:
+                        result = result.Where(res => res.IsOpen);
+                        break;
+                    case false:
+                        result = result.Where(res => !res.IsOpen);
+                        break;
+                }
+            }
 
             return Ok(result);
         }
@@ -43,18 +58,6 @@ namespace RestApi.Controllers
             var result = await _requestRepository.GetRequestById(id);
 
             return (result == null) ? NotFound() : Ok(result);
-        }
-
-        /// <summary>
-        ///     Get a list of all Requests where IsOpen = true
-        /// </summary>
-        /// <returns>List of all Requests (open)</returns>
-        [HttpGet("isopen")]
-        public ActionResult<List<Request>> GetAllOpenRequests()
-        {
-            var result = _requestRepository.GetOpenRequests();
-
-            return Ok(result);
         }
 
         /// <summary>
