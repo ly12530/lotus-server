@@ -78,7 +78,6 @@ namespace RestApi.Controllers
                 var requestToCreate = new Request
                 {
                     CustomerId = requestDto.CustomerId,
-                    Location = requestDto.Location,
                     Address = addressToCreate,
                     Date = requestDto.Date,
                     StartTime = requestDto.StartTime,
