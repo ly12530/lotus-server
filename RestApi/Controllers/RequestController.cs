@@ -15,11 +15,16 @@ namespace RestApi.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
+        private readonly IUserRepository _userRepository;
 
-        public RequestController(IRequestRepository requestRepository)
+        public RequestController(IRequestRepository requestRepository, IUserRepository userRepository)
         {
-            _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
+            _requestRepository = requestRepository;
+            _userRepository = userRepository;
         }
+
+
+
 
         /// <summary>
         ///     Get a list of all Requests
@@ -57,6 +62,7 @@ namespace RestApi.Controllers
 
             return result == null ? (ActionResult<Request>) NotFound() : Ok(result);
         }
+
 
         /// <summary>
         ///     Create a new request
@@ -118,7 +124,7 @@ namespace RestApi.Controllers
                 request.IsOpen = false;
             }
 
-            await _requestRepository.UpdateIsOpen(request);
+            await _requestRepository.UpdateRequest(request);
 
             var resultToReturn = request;
 
@@ -144,11 +150,27 @@ namespace RestApi.Controllers
             request.StartTime = requestToChange.StartTime;
             request.EndTime = requestToChange.EndTime;
 
-            await _requestRepository.UpdateTime(request);
+            await _requestRepository.UpdateRequest(request);
 
             var resultToReturn = request;
 
             return Ok(resultToReturn);
+        }
+
+        [HttpPut("{id}/subscribe")]
+        public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
+        { 
+
+            var request = await _requestRepository.GetRequestById(id);
+            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
+
+            request.Subscribers.Add(user);
+            user.Requests.Add(request);  
+
+            await _requestRepository.UpdateRequest(request);
+            await _userRepository.UpdateUser(user);
+            
+            return Ok();
         }
     }
 }
