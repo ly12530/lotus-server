@@ -23,6 +23,22 @@ namespace RestApi.Controllers
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
         }
 
+        /// <summary>
+        ///     Get a list of all Customers
+        /// </summary>
+        /// <returns>List of all Customers</returns>
+        [HttpGet]
+        public ActionResult<List<Customer>> GetAll()
+        {
+            var result = _customerRepository.GetAllCustomers();
+            return Ok(result);
+
+        }
+
+        /// <summary>
+        ///     Get Customer by Id
+        /// </summary>
+        /// <returns>Get one Customer by Id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetOne(int id)
         {
