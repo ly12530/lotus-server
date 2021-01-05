@@ -157,6 +157,13 @@ namespace RestApi.Controllers
             return Ok(resultToReturn);
         }
 
+
+        /// <summary>
+        ///  Subscribe function to let Users subscribe to a request
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subscribeDTO"></param>
+        /// <returns></returns>
         [HttpPut("{id}/subscribe")]
         public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
         { 
