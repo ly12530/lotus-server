@@ -16,6 +16,11 @@ namespace Infrastructure
             _context = context;
         }
 
+        public IQueryable<Customer> GetAllCustomers()
+        {
+            return _context.Customers.Include(customer => customer.Requests);
+        }
+
         public async Task<Customer> GetCustomerById(int id)
         {
             return await _context.Customers.SingleOrDefaultAsync(Customer => Customer.Id == id);
