@@ -32,12 +32,14 @@ namespace RestApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddHttpClient();
             
             services.AddDbContext<LotusDbContext>(options => options.UseNpgsql(
                 Configuration.GetConnectionString("Default")));
 
             services.AddScoped<IRequestRepository, RequestRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c => 

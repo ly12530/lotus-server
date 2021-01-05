@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    partial class LotusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210105092411_AddGeometryAddress")]
+    partial class AddGeometryAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,28 +103,18 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
-                });
+                    b.HasIndex("RequestId");
 
-            modelBuilder.Entity("RequestUser", b =>
-                {
-                    b.Property<int>("RequestsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SubscribersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("RequestsId", "SubscribersId");
-
-                    b.HasIndex("SubscribersId");
-
-                    b.ToTable("RequestUser");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Core.Domain.Request", b =>
@@ -166,24 +158,21 @@ namespace Infrastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("RequestUser", b =>
+            modelBuilder.Entity("Core.Domain.User", b =>
                 {
                     b.HasOne("Core.Domain.Request", null)
-                        .WithMany()
-                        .HasForeignKey("RequestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Domain.User", null)
-                        .WithMany()
-                        .HasForeignKey("SubscribersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Instructors")
+                        .HasForeignKey("RequestId");
                 });
 
             modelBuilder.Entity("Core.Domain.Customer", b =>
                 {
                     b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("Core.Domain.Request", b =>
+                {
+                    b.Navigation("Instructors");
                 });
 #pragma warning restore 612, 618
         }
