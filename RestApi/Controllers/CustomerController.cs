@@ -31,6 +31,7 @@ namespace RestApi.Controllers
         public ActionResult<List<Customer>> GetAll()
         {
             var result = _customerRepository.GetAllCustomers();
+            
             return Ok(result);
 
         }
