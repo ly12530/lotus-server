@@ -10,6 +10,8 @@ namespace Infrastructure
 
         public DbSet<Customer> Customers { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +33,7 @@ namespace Infrastructure
             // User
             modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
             modelBuilder.Entity<User>().Property(user => user.EmailAddress).IsRequired();
+            
         }
     }
 }

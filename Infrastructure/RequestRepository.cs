@@ -40,12 +40,7 @@ namespace Infrastructure
         }
 
 
-        public async Task UpdateIsOpen(Request request)
-        {
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateTime(Request request)
+        public async Task UpdateRequest(Request request)
         {
             await _context.SaveChangesAsync();
         }
