@@ -10,7 +10,6 @@ namespace Core.Domain.Test
         {
             // Arrange
             var customer = new Customer();
-            var location = "Breda";
             var address = new Address();
             var date = new DateTime();
             var startTime = "11:50";
@@ -22,7 +21,6 @@ namespace Core.Domain.Test
             var request = new Request
             {
                 Customer = customer,
-                Location = location,
                 Address = address,
                 Date = date,
                 StartTime = startTime,
@@ -33,7 +31,6 @@ namespace Core.Domain.Test
 
             // Assert
             Assert.Equal(customer, request.Customer);
-            Assert.Equal(location, request.Location);
             Assert.Equal(address, request.Address);
             Assert.Equal(date, request.Date);
             Assert.Equal(startTime, request.StartTime);
