@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestApi.Models;
 
 namespace RestApi.Controllers
@@ -15,10 +22,12 @@ namespace RestApi.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public RequestController(IRequestRepository requestRepository)
+        public RequestController(IRequestRepository requestRepository, IHttpClientFactory httpClientFactory)
         {
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
+            _httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -78,6 +87,8 @@ namespace RestApi.Controllers
                     Postcode = requestDto.Address.Postcode,
                     Street = requestDto.Address.Street
                 };
+
+                addressToCreate.Geometry = await GetGeometry(addressToCreate);
 
                 var requestToCreate = new Request
                 {
@@ -152,6 +163,33 @@ namespace RestApi.Controllers
             var resultToReturn = request;
 
             return Ok(resultToReturn);
+        }
+
+        private async Task<double[]> GetGeometry(Address address)
+        {
+            IList<double> result = new List<double>();
+            
+            var addressQuery = $"{address.Street}%20{address.Number}%20{address.City}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://photon.komoot.io/api/?q={addressQuery}");
+
+            var client = _httpClientFactory.CreateClient();
+
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var json = JsonConvert.DeserializeObject<JObject>(jsonString);
+                var coords = json["features"][0]["geometry"]["coordinates"].ToArray();
+                
+                foreach (var coord in coords)
+                {
+                    result.Add(coord.ToObject<double>());
+                }
+            }
+
+            return result.ToArray();
         }
     }
 }

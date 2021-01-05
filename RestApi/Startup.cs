@@ -32,6 +32,7 @@ namespace RestApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddHttpClient();
             
             services.AddDbContext<LotusDbContext>(options => options.UseNpgsql(
                 Configuration.GetConnectionString("Default")));
