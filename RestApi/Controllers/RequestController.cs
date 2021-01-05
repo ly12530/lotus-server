@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestApi.Models;
 
 namespace RestApi.Controllers
@@ -15,10 +22,15 @@ namespace RestApi.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IUserRepository _userRepository;
 
-        public RequestController(IRequestRepository requestRepository)
+        public RequestController(IRequestRepository requestRepository, IUserRepository userRepository,
+            IHttpClientFactory httpClientFactory)
         {
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -30,8 +42,10 @@ namespace RestApi.Controllers
         {
             var result = _requestRepository.GetAllRequests();
 
-            if (isOpen != null) {
-                switch (isOpen) {
+            if (isOpen != null)
+            {
+                switch (isOpen)
+                {
                     case true:
                         result = result.Where(res => res.IsOpen);
                         break;
@@ -62,6 +76,7 @@ namespace RestApi.Controllers
             return result == null ? (ActionResult<Request>) NotFound() : Ok(result);
         }
 
+
         /// <summary>
         ///     Create a new request
         /// </summary>
@@ -70,7 +85,8 @@ namespace RestApi.Controllers
         [HttpPost]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 var addressToCreate = new Address
                 {
                     City = requestDto.Address.City,
@@ -78,6 +94,8 @@ namespace RestApi.Controllers
                     Postcode = requestDto.Address.Postcode,
                     Street = requestDto.Address.Street
                 };
+
+                addressToCreate.Geometry = await GetGeometry(addressToCreate);
 
                 var requestToCreate = new Request
                 {
@@ -109,19 +127,22 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
 
             // Sanity Check
-            if (request == null || id != requestToChange.Id) {
+            if (request == null || id != requestToChange.Id)
+            {
                 return BadRequest();
             }
 
-            if (requestToChange.IsOpen) {
+            if (requestToChange.IsOpen)
+            {
                 request.IsOpen = true;
             }
 
-            if (!requestToChange.IsOpen) {
+            if (!requestToChange.IsOpen)
+            {
                 request.IsOpen = false;
             }
 
-            await _requestRepository.UpdateIsOpen(request);
+            await _requestRepository.UpdateRequest(request);
 
             var resultToReturn = request;
 
@@ -140,18 +161,68 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
 
             // Sanity Check
-            if (request == null || id != requestToChange.Id) {
+            if (request == null || id != requestToChange.Id)
+            {
                 return BadRequest();
             }
 
             request.StartTime = requestToChange.StartTime;
             request.EndTime = requestToChange.EndTime;
 
-            await _requestRepository.UpdateTime(request);
+            await _requestRepository.UpdateRequest(request);
 
             var resultToReturn = request;
 
             return Ok(resultToReturn);
+        }
+
+        /// <summary>
+        ///  Subscribe function to let Users subscribe to a request
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subscribeDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/subscribe")]
+        public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
+        { 
+
+            var request = await _requestRepository.GetRequestById(id);
+            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
+
+            request.Subscribers.Add(user);
+            user.Requests.Add(request);  
+
+            await _requestRepository.UpdateRequest(request);
+            await _userRepository.UpdateUser(user);
+            
+            return Ok();
+        }
+        
+        private async Task<double[]> GetGeometry(Address address)
+        {
+            IList<double> result = new List<double>();
+
+            var addressQuery = $"{address.Street}%20{address.Number}%20{address.City}";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://photon.komoot.io/api/?q={addressQuery}");
+
+            var client = _httpClientFactory.CreateClient();
+
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var json = JsonConvert.DeserializeObject<JObject>(jsonString);
+                var coords = json["features"][0]["geometry"]["coordinates"].ToArray();
+
+                foreach (var coord in coords)
+                {
+                    result.Add(coord.ToObject<double>());
+                }
+            }
+
+            return result.ToArray();
         }
     }
 }

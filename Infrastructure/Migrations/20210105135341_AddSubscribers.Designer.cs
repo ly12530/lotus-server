@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    partial class LotusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210105135341_AddSubscribers")]
+    partial class AddSubscribers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,6 +81,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("LessonType")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("StartTime")
                         .IsRequired()
                         .HasColumnType("text");
@@ -140,9 +146,6 @@ namespace Infrastructure.Migrations
 
                             b1.Property<string>("City")
                                 .HasColumnType("text");
-
-                            b1.Property<double[]>("Geometry")
-                                .HasColumnType("double precision[]");
 
                             b1.Property<string>("Number")
                                 .HasColumnType("text");

@@ -10,9 +10,8 @@ namespace Core.DomainServices
         IQueryable<Request> GetAllRequests();
         Task AddRequest(Request newRequest);
         Task<Request> GetRequestById(int id);
-        Task UpdateIsOpen(Request request);
-        Task UpdateTime(Request request);
-        IEnumerable<Request> GetOpenRequests();
+        Task UpdateRequest(Request request);   
+        IEnumerable<Request> GetOpenRequests();      
 
     }
 }

@@ -24,6 +24,12 @@ namespace Core.Domain
 
         public bool IsOpen { get; set; }
 
-        public ICollection<User>? Instructors { get; set; }
+    //    public ICollection<User>? Instructors { get; set; }
+
+        public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
+        
+        // you may also use List<Student>, but HashSet will guarantee that you are not adding the same Student mistakenly twice
+        
+
     }
 }
