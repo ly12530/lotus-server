@@ -29,6 +29,11 @@ namespace Infrastructure
             return await _context.Users.SingleOrDefaultAsync(user => user.Id == id);
         }
 
+        public async Task<User> GetUserByEmail(string emailAddress)
+        {
+            return await _context.Users.SingleOrDefaultAsync(user => user.EmailAddress == emailAddress);
+        }
+
         public async Task UpdateUser(User user)
         {
             await _context.SaveChangesAsync();

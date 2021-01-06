@@ -19,5 +19,17 @@ namespace Core.Domain
         public string Password { get; set; }
 
         public virtual ICollection<Request> Requests { get; set; } = new HashSet<Request>();
+
+        public bool Subscribe(Request request)
+        {
+            if (request.IsOpen)
+            {
+                Requests.Add(request);
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
     }
 }

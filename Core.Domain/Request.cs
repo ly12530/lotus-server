@@ -28,6 +28,20 @@ namespace Core.Domain
     //    public ICollection<User>? Instructors { get; set; }
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
+
+        public bool Subscribe(User user)
+        {
+            if (IsOpen)
+            {                
+                Subscribers.Add(user);
+                return true; // Succes
+                
+            }
+            else
+            {
+                return false; // Not authorized
+            }
+        }
         
         // you may also use List<Student>, but HashSet will guarantee that you are not adding the same Student mistakenly twice
         
