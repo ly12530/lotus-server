@@ -35,7 +35,7 @@ namespace Core.Domain
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
 
-        public User User { get; set; }
+        public User DesignatedUser { get; set; }
 
         public bool Subscribe(User user)
         {
