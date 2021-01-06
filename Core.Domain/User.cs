@@ -13,6 +13,10 @@ namespace Core.Domain
         
         [EmailAddress]
         public string EmailAddress { get; set; }
+        
+        public Role Role { get; set; }
+        
+        public string Password { get; set; }
 
         public virtual ICollection<Request> Requests { get; set; } = new HashSet<Request>();
 

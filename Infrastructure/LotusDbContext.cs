@@ -29,11 +29,14 @@ namespace Infrastructure
             modelBuilder.Entity<Request>().Property(request => request.StartTime).IsRequired();
             modelBuilder.Entity<Request>().Property(request => request.EndTime).IsRequired();
             modelBuilder.Entity<Request>().OwnsOne(request => request.Address);
-
+            modelBuilder.Entity<Request>().Property(request => request.Title).IsRequired();
             // User
             modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
             modelBuilder.Entity<User>().Property(user => user.EmailAddress).IsRequired();
-            
+            modelBuilder.Entity<User>().HasIndex(user => user.EmailAddress).IsUnique();
+            modelBuilder.Entity<User>().Property(user => user.Role).IsRequired();
+            modelBuilder.Entity<User>().Property(user => user.Password).IsRequired();
+
         }
     }
 }

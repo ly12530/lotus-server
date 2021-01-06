@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    [Migration("20210105135341_AddSubscribers")]
-    partial class AddSubscribers
+    [Migration("20210106101724_RefreshMigrations")]
+    partial class RefreshMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,11 +81,11 @@ namespace Infrastructure.Migrations
                     b.Property<int>("LessonType")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Location")
+                    b.Property<string>("StartTime")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("StartTime")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -106,6 +106,13 @@ namespace Infrastructure.Migrations
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -146,6 +153,9 @@ namespace Infrastructure.Migrations
 
                             b1.Property<string>("City")
                                 .HasColumnType("text");
+
+                            b1.Property<double[]>("Geometry")
+                                .HasColumnType("double precision[]");
 
                             b1.Property<string>("Number")
                                 .HasColumnType("text");
