@@ -204,10 +204,6 @@ namespace RestApi.Controllers
             {
                 return Unauthorized("Request is not open!");
             }
-            if (request.Subscribe(user) == 304)
-            {
-                return Unauthorized("Already subscribed!");
-            }
             await _requestRepository.UpdateRequest(request);
             await _userRepository.UpdateUser(user);
 
