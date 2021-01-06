@@ -17,7 +17,13 @@ namespace Core.Domain
 
         public string StartTime { get; set; }
 
+        public string RealStartTime { get; set; }
+
         public string EndTime { get; set; }
+
+        public string RealEndTime { get; set; }
+
+        public int DistanceTraveled { get; set; }
 
         public bool IsExam { get; set; }
 
