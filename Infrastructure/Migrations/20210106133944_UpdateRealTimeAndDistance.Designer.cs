@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    partial class LotusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210106133944_UpdateRealTimeAndDistance")]
+    partial class UpdateRealTimeAndDistance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,14 +98,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Requests");
                 });
@@ -159,10 +156,6 @@ namespace Infrastructure.Migrations
                         .WithMany("Requests")
                         .HasForeignKey("CustomerId");
 
-                    b.HasOne("Core.Domain.User", "User")
-                        .WithMany("Jobs")
-                        .HasForeignKey("UserId");
-
                     b.OwnsOne("Core.Domain.Address", "Address", b1 =>
                         {
                             b1.Property<int>("RequestId")
@@ -196,8 +189,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("Customer");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RequestUser", b =>
@@ -218,11 +209,6 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Domain.Customer", b =>
                 {
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("Core.Domain.User", b =>
-                {
-                    b.Navigation("Jobs");
                 });
 #pragma warning restore 612, 618
         }

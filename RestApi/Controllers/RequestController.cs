@@ -249,5 +249,49 @@ namespace RestApi.Controllers
 
             return result.ToArray();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="putRealTimeDistanceRequestDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/timeanddistance")]
+        public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
+            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
+            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
+
+            await _requestRepository.UpdateRequest(request);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+          
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subscribeDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/assign")]
+        public async Task<ActionResult<SubscribeDTO>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
+
+            request.DesignatedUser = user;
+            user.Jobs.Add(request);
+
+
+            await _requestRepository.UpdateRequest(request);
+            await _userRepository.UpdateUser(user);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+        }
     }
 }

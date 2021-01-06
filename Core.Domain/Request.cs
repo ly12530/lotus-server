@@ -19,7 +19,13 @@ namespace Core.Domain
 
         public string StartTime { get; set; }
 
+        public string RealStartTime { get; set; }
+
         public string EndTime { get; set; }
+
+        public string RealEndTime { get; set; }
+
+        public int DistanceTraveled { get; set; }
 
         public bool IsExam { get; set; }
 
@@ -30,7 +36,9 @@ namespace Core.Domain
     //    public ICollection<User>? Instructors { get; set; }
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
-        
+
+        public User DesignatedUser { get; set; }
+
         public bool Subscribe(User user)
         {
             if (IsOpen)
