@@ -189,13 +189,29 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
             var user = await _userRepository.GetUserById(subscribeDTO.UserId);
 
-            request.Subscribers.Add(user);
-            user.Requests.Add(request);  
+            // Sanity Check
+            if (request == null)
+            {
+                return BadRequest();
+            }
 
+            request.Subscribe(user);
+            user.Subscribe(request);  
+
+            
+
+            if (request.Subscribe(user) == 401)
+            {
+                return Unauthorized("Request is not open!");
+            }
+            if (request.Subscribe(user) == 304)
+            {
+                return Unauthorized("Already subscribed!");
+            }
             await _requestRepository.UpdateRequest(request);
             await _userRepository.UpdateUser(user);
-            
-            return Ok();
+
+            return Ok("Succesfully subscribed!");
         }
         
         private async Task<double[]> GetGeometry(Address address)
