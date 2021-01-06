@@ -23,7 +23,7 @@ namespace Infrastructure
 
         public async Task<Customer> GetCustomerById(int id)
         {
-            return await _context.Customers.SingleOrDefaultAsync(Customer => Customer.Id == id);
+            return await _context.Customers.SingleOrDefaultAsync(cust => cust.Id == id);
         }
     }
 }

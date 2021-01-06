@@ -24,13 +24,15 @@ namespace RestApi.Controllers
         private readonly IRequestRepository _requestRepository;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IUserRepository _userRepository;
+        private readonly ICustomerRepository _customerRepository;
 
         public RequestController(IRequestRepository requestRepository, IUserRepository userRepository,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory, ICustomerRepository customerRepository)
         {
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _httpClientFactory = httpClientFactory;
+            _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
         }
 
         /// <summary>
@@ -40,27 +42,27 @@ namespace RestApi.Controllers
         [HttpGet]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
         {
-            var result = _requestRepository.GetAllRequests();
+            var requests = _requestRepository.GetAllRequests();
 
             if (isOpen != null)
             {
                 switch (isOpen)
                 {
                     case true:
-                        result = result.Where(res => res.IsOpen);
+                        requests = requests.Where(res => res.IsOpen);
                         break;
                     case false:
-                        result = result.Where(res => !res.IsOpen);
+                        requests = requests.Where(res => !res.IsOpen);
                         break;
                 }
             }
 
             if (date != null)
             {
-                result = result.Where(res => res.Date.Date == date.Value.Date);
+                requests = requests.Where(res => res.Date.Date == date.Value.Date);
             }
 
-            return Ok(result);
+            return Ok(requests);
         }
 
         /// <summary>
@@ -72,8 +74,13 @@ namespace RestApi.Controllers
         public async Task<ActionResult<Request>> GetOne(int id)
         {
             var result = await _requestRepository.GetRequestById(id);
+            
+            if (result == null) return NotFound();
+            
+            result.Customer = await _customerRepository.GetCustomerById(result.CustomerId);
 
-            return result == null ? (ActionResult<Request>) NotFound() : Ok(result);
+            return Ok(result);
+
         }
 
 
@@ -97,20 +104,25 @@ namespace RestApi.Controllers
 
                 addressToCreate.Geometry = await GetGeometry(addressToCreate);
 
-                var requestToCreate = new Request
-                {
-                    Title = requestDto.Title,
-                    CustomerId = requestDto.CustomerId,
-                    Address = addressToCreate,
-                    Date = requestDto.Date,
-                    StartTime = requestDto.StartTime,
-                    EndTime = requestDto.EndTime,
-                    IsExam = requestDto.IsExam,
-                    LessonType = requestDto.LessonType
-                };
+                var customer = await _customerRepository.GetCustomerById(requestDto.CustomerId);
 
-                await _requestRepository.AddRequest(requestToCreate);
-                return CreatedAtAction(nameof(GetOne), new {id = requestToCreate.Id}, requestToCreate);
+                if (customer != null)
+                {
+                    var requestToCreate = new Request
+                    {
+                        Title = requestDto.Title,
+                        Customer = customer,
+                        Address = addressToCreate,
+                        Date = requestDto.Date,
+                        StartTime = requestDto.StartTime,
+                        EndTime = requestDto.EndTime,
+                        IsExam = requestDto.IsExam,
+                        LessonType = requestDto.LessonType
+                    };
+
+                    await _requestRepository.AddRequest(requestToCreate);
+                    return CreatedAtAction(nameof(GetOne), new {id = requestToCreate.Id}, requestToCreate);
+                }
             }
 
             return BadRequest();

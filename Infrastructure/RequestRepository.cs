@@ -18,7 +18,7 @@ namespace Infrastructure
 
         public IQueryable<Request> GetAllRequests()
         {
-            return _context.Requests.Include(request => request.DesignatedUser);
+            return _context.Requests.Include(req => req.Customer).Include(req => req.DesignatedUser);
         }
 
         public async Task AddRequest(Request newRequest)
@@ -34,11 +34,8 @@ namespace Infrastructure
 
         public IEnumerable<Request> GetOpenRequests()
         {
-
             return _context.Requests.Where(g => g.IsOpen);
-
         }
-
 
         public async Task UpdateRequest(Request request)
         {
