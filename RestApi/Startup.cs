@@ -72,6 +72,7 @@ namespace RestApi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1");
+                c.RoutePrefix = String.Empty;
                 c.InjectStylesheet("/css/custom.css");
             });
 
