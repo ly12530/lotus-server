@@ -43,6 +43,7 @@ namespace RestApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetOne(int id)
         {
+            if (id == 0) return NotFound();
             var result = await _customerRepository.GetCustomerById(id);
 
             result.Requests = _requestRepository.GetAllRequests().Where(res => res.CustomerId == id).ToList();

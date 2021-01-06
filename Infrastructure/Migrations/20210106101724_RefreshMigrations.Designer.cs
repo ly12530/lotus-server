@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    [Migration("20210104133856_UpdateRequestModel2")]
-    partial class UpdateRequestModel2
+    [Migration("20210106101724_RefreshMigrations")]
+    partial class RefreshMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,11 +81,11 @@ namespace Infrastructure.Migrations
                     b.Property<int>("LessonType")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Location")
+                    b.Property<string>("StartTime")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("StartTime")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -107,7 +107,11 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("RequestId")
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
                         .HasColumnType("integer");
 
                     b.Property<string>("UserName")
@@ -116,9 +120,22 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RequestId");
+                    b.ToTable("Users");
+                });
 
-                    b.ToTable("User");
+            modelBuilder.Entity("RequestUser", b =>
+                {
+                    b.Property<int>("RequestsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubscribersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RequestsId", "SubscribersId");
+
+                    b.HasIndex("SubscribersId");
+
+                    b.ToTable("RequestUser");
                 });
 
             modelBuilder.Entity("Core.Domain.Request", b =>
@@ -136,6 +153,9 @@ namespace Infrastructure.Migrations
 
                             b1.Property<string>("City")
                                 .HasColumnType("text");
+
+                            b1.Property<double[]>("Geometry")
+                                .HasColumnType("double precision[]");
 
                             b1.Property<string>("Number")
                                 .HasColumnType("text");
@@ -159,21 +179,24 @@ namespace Infrastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Core.Domain.User", b =>
+            modelBuilder.Entity("RequestUser", b =>
                 {
                     b.HasOne("Core.Domain.Request", null)
-                        .WithMany("Instructors")
-                        .HasForeignKey("RequestId");
+                        .WithMany()
+                        .HasForeignKey("RequestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("SubscribersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Domain.Customer", b =>
                 {
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("Core.Domain.Request", b =>
-                {
-                    b.Navigation("Instructors");
                 });
 #pragma warning restore 612, 618
         }
