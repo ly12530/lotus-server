@@ -99,6 +99,7 @@ namespace RestApi.Controllers
 
                 var requestToCreate = new Request
                 {
+                    Title = requestDto.Title,
                     CustomerId = requestDto.CustomerId,
                     Address = addressToCreate,
                     Date = requestDto.Date,
