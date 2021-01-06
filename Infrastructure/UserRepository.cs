@@ -18,6 +18,12 @@ namespace Infrastructure
             _context = context;
         }
 
+        public async Task RegisterUser(User newUser)
+        {
+            await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<User> GetUserById(int id)
         {
             return await _context.Users.SingleOrDefaultAsync(user => user.Id == id);
