@@ -3,7 +3,7 @@ using Core.Domain;
 
 namespace RestApi.Models
 {
-    public class NewUserDTO
+    public class RegisterDTO
     {
         [Required]
         public string UserName { get; set; }

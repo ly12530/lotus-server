@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Core.Domain
 {
@@ -9,7 +10,8 @@ namespace Core.Domain
 
         public string Title { get; set; }
         public Customer Customer { get; set; }
-        public int? CustomerId { get; set; }
+        [IgnoreDataMember]
+        public int CustomerId { get; set; }
 
         public Address Address { get; set; }
 
@@ -17,7 +19,13 @@ namespace Core.Domain
 
         public string StartTime { get; set; }
 
+        public string RealStartTime { get; set; }
+
         public string EndTime { get; set; }
+
+        public string RealEndTime { get; set; }
+
+        public int DistanceTraveled { get; set; }
 
         public bool IsExam { get; set; }
 
@@ -28,6 +36,22 @@ namespace Core.Domain
     //    public ICollection<User>? Instructors { get; set; }
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
+
+        public User DesignatedUser { get; set; }
+
+        public bool Subscribe(User user)
+        {
+            if (IsOpen)
+            {                
+                Subscribers.Add(user);
+                return true; // Succes
+                
+            }
+            else
+            {
+                return false; // Not authorized
+            }
+        }
         
         // you may also use List<Student>, but HashSet will guarantee that you are not adding the same Student mistakenly twice
         

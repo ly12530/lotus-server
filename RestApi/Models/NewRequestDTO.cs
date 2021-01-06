@@ -6,7 +6,7 @@ namespace RestApi.Models
 {
     public class NewRequestDTO
     {
-        public int? CustomerId { get; set; }
+        public int CustomerId { get; set; }
 
         [Required] public string Title { get; set; }
         [Required] public NewAddressDTO Address { get; set; }
