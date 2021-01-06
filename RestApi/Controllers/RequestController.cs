@@ -127,7 +127,7 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
 
             // Sanity Check
-            if (request == null || id != requestToChange.Id)
+            if (request == null)
             {
                 return BadRequest();
             }

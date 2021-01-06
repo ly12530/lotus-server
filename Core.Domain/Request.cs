@@ -31,15 +31,10 @@ namespace Core.Domain
         public int Subscribe(User user)
         {
             if (IsOpen)
-            {
-                if (!Subscribers.Contains(user)) { 
+            {                
                 Subscribers.Add(user);
                 return 200; // Succes
-                }
-                else
-                {
-                    return 304; //Duplicate
-                }
+                
             }
             else
             {
