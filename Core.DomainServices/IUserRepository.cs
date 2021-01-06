@@ -9,6 +9,7 @@ namespace Core.DomainServices
     {
         Task RegisterUser(User newUser);
         Task<User> GetUserById(int id);
+        Task<User> GetUserByEmail(string emailAddress);
         Task UpdateUser(User user);
     }
 }

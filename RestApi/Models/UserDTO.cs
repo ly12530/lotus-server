@@ -2,7 +2,7 @@
 
 namespace RestApi.Models
 {
-    public class UserDTO : NewUserDTO
+    public class UserDTO : RegisterDTO
     {
         [Key] 
         public int Id { get; set; }
