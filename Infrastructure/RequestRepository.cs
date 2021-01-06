@@ -18,7 +18,7 @@ namespace Infrastructure
 
         public IQueryable<Request> GetAllRequests()
         {
-            return _context.Requests;
+            return _context.Requests.Include(request => request.User);
         }
 
         public async Task AddRequest(Request newRequest)
