@@ -7,7 +7,8 @@ namespace Core.DomainServices
 {
     public interface IUserRepository
     {
-        Task UpdateUser(User user);
+        Task RegisterUser(User newUser);
         Task<User> GetUserById(int id);
+        Task UpdateUser(User user);
     }
 }
