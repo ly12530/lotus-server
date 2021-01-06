@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Core.Domain
 {
@@ -9,7 +10,8 @@ namespace Core.Domain
 
         public string Title { get; set; }
         public Customer Customer { get; set; }
-        public int? CustomerId { get; set; }
+        [IgnoreDataMember]
+        public int CustomerId { get; set; }
 
         public Address Address { get; set; }
 
@@ -28,7 +30,7 @@ namespace Core.Domain
     //    public ICollection<User>? Instructors { get; set; }
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
-
+        
         public bool Subscribe(User user)
         {
             if (IsOpen)
