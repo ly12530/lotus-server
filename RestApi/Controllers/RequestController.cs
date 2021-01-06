@@ -270,7 +270,7 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
             var user = await _userRepository.GetUserById(subscribeDTO.UserId);
 
-            request.User = user;
+            request.DesignatedUser = user;
             user.Jobs.Add(request);
 
 
