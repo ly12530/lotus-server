@@ -28,17 +28,17 @@ namespace Core.Domain
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
 
-        public int Subscribe(User user)
+        public bool Subscribe(User user)
         {
             if (IsOpen)
             {                
                 Subscribers.Add(user);
-                return 200; // Succes
+                return true; // Succes
                 
             }
             else
             {
-                return 401; // Not authorized
+                return false; // Not authorized
             }
         }
         

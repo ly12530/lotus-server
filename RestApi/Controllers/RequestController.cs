@@ -200,7 +200,7 @@ namespace RestApi.Controllers
 
             
 
-            if (request.Subscribe(user) == 401)
+            if (!request.Subscribe(user))
             {
                 return Unauthorized("Request is not open!");
             }
