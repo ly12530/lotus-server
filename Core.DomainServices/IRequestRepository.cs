@@ -11,7 +11,7 @@ namespace Core.DomainServices
         Task AddRequest(Request newRequest);
         Task<Request> GetRequestById(int id);
         Task UpdateRequest(Request request);   
-        IEnumerable<Request> GetOpenRequests();      
+        IEnumerable<Request> GetOpenRequests();
 
     }
 }

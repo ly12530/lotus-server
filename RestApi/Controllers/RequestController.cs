@@ -237,5 +237,26 @@ namespace RestApi.Controllers
 
             return result.ToArray();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="putRealTimeDistanceRequestDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/timeanddistance")]
+        public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
+            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
+            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
+
+            await _requestRepository.UpdateRequest(request);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+          
+        }
     }
 }
