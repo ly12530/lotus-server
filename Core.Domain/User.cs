@@ -20,6 +20,8 @@ namespace Core.Domain
 
         public virtual ICollection<Request> Requests { get; set; } = new HashSet<Request>();
 
+        public virtual ICollection<Request> Jobs { get; set; } = new HashSet<Request>();
+
         public bool Subscribe(Request request)
         {
             if (request.IsOpen)

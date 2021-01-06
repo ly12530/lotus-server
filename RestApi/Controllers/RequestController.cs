@@ -258,5 +258,28 @@ namespace RestApi.Controllers
             return Ok(resultToReturn);
           
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subscribeDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/assign")]
+        public async Task<ActionResult<SubscribeDTO>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
+
+            request.DesignatedUser = user;
+            user.Jobs.Add(request);
+
+
+            await _requestRepository.UpdateRequest(request);
+            await _userRepository.UpdateUser(user);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+        }
     }
 }
