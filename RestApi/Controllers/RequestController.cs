@@ -95,8 +95,21 @@ namespace RestApi.Controllers
             if (result == null) return NotFound();
             
             result.Customer = await _customerRepository.GetCustomerById(result.CustomerId);
+            
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc =>
+            {
+                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
+                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
+                mc.CreateMap<Request, MapRequestDTO>()
+                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
+                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
+                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
+            });
+            var mapper = new Mapper(conf);
+            var reqResource = mapper.Map<List<Request>, List<MapRequestDTO>>(new List<Request>(){result}).First();
 
-            return Ok(result);
+            return Ok(reqResource);
 
         }
 
