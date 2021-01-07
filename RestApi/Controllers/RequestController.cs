@@ -12,6 +12,7 @@ using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestApi.Models;
@@ -65,8 +66,21 @@ namespace RestApi.Controllers
             {
                 requests = requests.Where(res => res.Date.Date == date.Value.Date);
             }
+            
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc =>
+            {
+                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
+                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
+                mc.CreateMap<Request, MapRequestDTO>()
+                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
+                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
+                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
+            });
+            var mapper = new Mapper(conf);
+            var requestSource = mapper.Map<List<Request>, List<MapRequestDTO>>(requests.ToList());
 
-            return Ok(requests);
+            return Ok(requestSource);
         }
 
         /// <summary>
@@ -82,11 +96,29 @@ namespace RestApi.Controllers
             if (result == null) return NotFound();
             
             result.Customer = await _customerRepository.GetCustomerById(result.CustomerId);
+            
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc =>
+            {
+                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
+                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
+                mc.CreateMap<Request, MapRequestDTO>()
+                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
+                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
+                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
+            });
+            var mapper = new Mapper(conf);
+            var reqResource = mapper.Map<List<Request>, List<MapRequestDTO>>(new List<Request>(){result}).First();
 
-            return Ok(result);
+            return Ok(reqResource);
 
         }
 
+        /// <summary>
+        /// Get all subscribers of a specific Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <returns>List of subscribers of the Request with the given Id</returns>
         [HttpGet("{id}/subscribers")]
         public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
         {
@@ -298,7 +330,7 @@ namespace RestApi.Controllers
         {
             IList<double> result = new List<double>();
 
-            var addressQuery = $"{address.Street}%20{address.Number}%20{address.City}";
+            var addressQuery = $"{address.Street} {address.Number} {address.City}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://photon.komoot.io/api/?q={addressQuery}");
 
