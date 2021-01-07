@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
@@ -85,5 +87,39 @@ namespace RestApi.Controllers
 
             return (result == null) ? NotFound() : Ok(result);
         }
+        [HttpGet]
+        public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
+        {
+            var request = _userRepository.GetUsers();
+            
+            if (role != null)
+            {
+                int i = (int)role;
+                switch (i)
+                {
+                    case 0:
+                        request = request.Where(res => res.Role == Role.Customer);
+                        break;
+                    case 1:
+                        request = request.Where(res => res.Role == Role.Member);
+                        break;
+                    case 2:
+                        request = request.Where(res => res.Role == Role.PenningMaster);
+                        break;
+                    case 3:
+                        request = request.Where(res => res.Role == Role.BettingCoordinator);
+                        break;
+                    case 4:
+                        request = request.Where(res => res.Role == Role.Instructor);
+                        break;
+                    case 5:
+                        request = request.Where(res => res.Role == Role.Administrator);
+                        break;
+                }
+                return Ok(request);
+            }
+            return Ok(request);
+        }
+           
+        }
     }
-}

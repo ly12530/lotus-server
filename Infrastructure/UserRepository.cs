@@ -39,6 +39,14 @@ namespace Infrastructure
             await _context.SaveChangesAsync();
         }
 
-        
+        public IQueryable<User> GetUsers()
+        {
+            return _context.Users;
+        }
+
+        public IEnumerable<User> GetUserByRole(Role role)
+        {
+            return _context.Users.Where(g => g.Role == role);
+        }
     }
 }
