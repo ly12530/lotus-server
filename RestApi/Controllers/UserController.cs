@@ -92,7 +92,7 @@ namespace RestApi.Controllers
         /// Login to an existing User
         /// </summary>
         /// <param name="loginDto">Body with attributes to identity User</param>
-        /// <returns>User with matching email & password + JWT-token</returns>
+        /// <returns>User with matching Email and Password + JWT-token</returns>
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(LoginDTO loginDto)
         {
