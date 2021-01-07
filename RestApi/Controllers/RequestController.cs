@@ -245,9 +245,9 @@ namespace RestApi.Controllers
         /// <summary>
         /// Subscribe function to let Users subscribe to a request
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="subscribeDTO"></param>
-        /// <returns></returns>
+        /// <param name="id">Id of the specific Request</param>
+        /// <param name="subscribeDTO">Body with the attributes of the User which wants to subscribe on the Request</param>
+        /// <returns>Message if subscription was successful</returns>
         [HttpPut("{id}/subscribe")]
         public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
         { 
@@ -262,9 +262,7 @@ namespace RestApi.Controllers
             }
 
             request.Subscribe(user);
-            user.Subscribe(request);  
-
-            
+            user.Subscribe(request);
 
             if (!request.Subscribe(user))
             {

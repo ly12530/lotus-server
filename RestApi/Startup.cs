@@ -75,7 +75,7 @@ namespace RestApi
 
             app.UseStaticFiles();
 
-            app.UseSwagger(c => c.SerializeAsV2 = true);
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1");
