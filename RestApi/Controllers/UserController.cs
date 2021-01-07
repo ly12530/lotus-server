@@ -28,12 +28,10 @@ namespace RestApi.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var hashPassword = HashPassword(registerDto.Password, 12);
 
-                if (Verify(registerDto.Password, hashPassword))
-                {
+                if (Verify(registerDto.Password, hashPassword)) {
                     var userToRegister = new User
                     {
                         UserName = registerDto.UserName,
@@ -46,7 +44,6 @@ namespace RestApi.Controllers
 
                     return CreatedAtAction(nameof(GetById), new {id = userToRegister.Id}, userToRegister);
                 }
-
             }
 
             return BadRequest(registerDto);
@@ -60,12 +57,10 @@ namespace RestApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(LoginDTO loginDto)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var foundUser = await _userRepository.GetUserByEmail(loginDto.EmailAddress);
 
-                if (Verify(loginDto.Password, foundUser.Password))
-                {
+                if (Verify(loginDto.Password, foundUser.Password)) {
                     return Ok(foundUser);
                 }
             }
@@ -79,11 +74,11 @@ namespace RestApi.Controllers
         /// <param name="id">Id of the specific user</param>
         /// <returns>Specific user with the given Id</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetById(int id)
+        public async Task<ActionResult<User>> GetById(int id)
         {
             var result = await _userRepository.GetUserById(id);
 
-            return (result == null) ? NotFound() : Ok(result);
+            return result == null ? NotFound() : Ok(result);
         }
     }
 }
