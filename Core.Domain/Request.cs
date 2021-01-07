@@ -10,7 +10,6 @@ namespace Core.Domain
 
         public string Title { get; set; }
         public Customer Customer { get; set; }
-        [IgnoreDataMember]
         public int CustomerId { get; set; }
 
         public Address Address { get; set; }

@@ -7,9 +7,11 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestApi.Models;
@@ -83,6 +85,23 @@ namespace RestApi.Controllers
 
             return Ok(result);
 
+        }
+
+        [HttpGet("{id}/subscribers")]
+        public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+
+            if (request == null) return NotFound();
+            
+            var subs = _requestRepository.GetAllRequests().First(r => r.Id == id).Subscribers.ToList();
+
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc => mc.CreateMap<User, MapSubscribersDTO>());
+            var mapper = new Mapper(conf);
+            var subResource = mapper.Map<List<User>, List<MapSubscribersDTO>>(subs);
+            
+            return Ok(subResource);
         }
 
 

@@ -18,7 +18,10 @@ namespace Infrastructure
 
         public IQueryable<Request> GetAllRequests()
         {
-            return _context.Requests.Include(req => req.Customer).Include(req => req.DesignatedUser);
+            return _context.Requests
+                .Include(req => req.Customer)
+                .Include(req => req.DesignatedUser)
+                .Include(req => req.Subscribers);
         }
 
         public async Task AddRequest(Request newRequest)
@@ -29,7 +32,10 @@ namespace Infrastructure
 
         public async Task<Request> GetRequestById(int id)
         {
-            return await _context.Requests.SingleOrDefaultAsync(request => request.Id == id);
+            return await _context.Requests
+                .Include(req => req.Subscribers)
+                .Include(req => req.DesignatedUser)
+                .FirstOrDefaultAsync(req => req.Id == id);
         }
 
         public IEnumerable<Request> GetOpenRequests()
