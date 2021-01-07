@@ -65,8 +65,21 @@ namespace RestApi.Controllers
             {
                 requests = requests.Where(res => res.Date.Date == date.Value.Date);
             }
+            
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc =>
+            {
+                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
+                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
+                mc.CreateMap<Request, MapRequestDTO>()
+                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
+                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
+                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
+            });
+            var mapper = new Mapper(conf);
+            var requestSource = mapper.Map<List<Request>, List<MapRequestDTO>>(requests.ToList());
 
-            return Ok(requests);
+            return Ok(requestSource);
         }
 
         /// <summary>
