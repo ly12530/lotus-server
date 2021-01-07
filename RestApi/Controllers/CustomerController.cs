@@ -24,7 +24,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a list of all Customers
+        /// Get a list of all Customers
         /// </summary>
         /// <returns>List of all Customers</returns>
         [HttpGet]
@@ -37,9 +37,10 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get Customer by Id
+        /// Get Customer by Id
         /// </summary>
-        /// <returns>Get one Customer by Id</returns>
+        /// <param name="id">Id of the Customer</param>
+        /// <returns>Customer with the given Id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetOne(int id)
         {

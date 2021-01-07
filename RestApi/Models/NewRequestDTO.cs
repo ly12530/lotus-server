@@ -1,11 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using AutoMapper.Configuration.Annotations;
 using Core.Domain;
 
 namespace RestApi.Models
 {
     public class NewRequestDTO
     {
+        [IgnoreDataMember]
         public int CustomerId { get; set; }
 
         [Required] public string Title { get; set; }

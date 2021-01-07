@@ -23,7 +23,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Register a new User
+        /// Register a new User
         /// </summary>
         /// <param name="registerDto">Body with attributes of the User</param>
         /// <returns>User which had been registered + JWT-token</returns>
@@ -52,7 +52,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Login to an existing User
+        /// Login to an existing User
         /// </summary>
         /// <param name="loginDto">Body with attributes to identity User</param>
         /// <returns>User with matching email & password + JWT-token</returns>
@@ -71,7 +71,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a specific user by it's ID
+        /// Get a specific user by it's ID
         /// </summary>
         /// <param name="id">Id of the specific user</param>
         /// <returns>Specific user with the given Id</returns>

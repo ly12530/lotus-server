@@ -26,7 +26,10 @@ namespace Infrastructure
 
         public async Task<User> GetUserById(int id)
         {
-            return await _context.Users.Include(user => user.Jobs).SingleOrDefaultAsync(user => user.Id == id);
+            return await _context.Users
+                .Include(user => user.Requests)
+                .Include(user => user.Jobs)
+                .SingleOrDefaultAsync(user => user.Id == id);
         }
 
         public async Task<User> GetUserByEmail(string emailAddress)
