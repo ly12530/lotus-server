@@ -87,6 +87,11 @@ namespace RestApi.Controllers
 
             return (result == null) ? NotFound() : Ok(result);
         }
+        /// <summary>
+        /// Get all users either with or without a role.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
