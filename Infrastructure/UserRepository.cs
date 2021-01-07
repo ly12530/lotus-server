@@ -18,6 +18,11 @@ namespace Infrastructure
             _context = context;
         }
 
+        public IQueryable<User> GetAllUsers()
+        {
+            return _context.Users;
+        }
+
         public async Task RegisterUser(User newUser)
         {
             await _context.Users.AddAsync(newUser);

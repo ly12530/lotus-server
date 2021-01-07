@@ -12,6 +12,7 @@ using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestApi.Models;
@@ -113,6 +114,11 @@ namespace RestApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get all subscribers of a specific Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <returns>List of subscribers of the Request with the given Id</returns>
         [HttpGet("{id}/subscribers")]
         public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
         {
@@ -324,7 +330,7 @@ namespace RestApi.Controllers
         {
             IList<double> result = new List<double>();
 
-            var addressQuery = $"{address.Street}%20{address.Number}%20{address.City}";
+            var addressQuery = $"{address.Street} {address.Number} {address.City}";
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://photon.komoot.io/api/?q={addressQuery}");
 
