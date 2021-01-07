@@ -8,7 +8,6 @@ namespace RestApi.Models
 {
     public class NewRequestDTO
     {
-        [IgnoreDataMember]
         public int CustomerId { get; set; }
 
         [Required] public string Title { get; set; }

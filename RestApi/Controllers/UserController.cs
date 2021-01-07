@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +20,43 @@ namespace RestApi.Controllers
         public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        }
+        
+        /// <summary>
+        /// Get all Users either with or without a role.
+        /// </summary>
+        /// <param name="role">Role of the User</param>
+        /// <returns>Users matching the query</returns>
+        [HttpGet]
+        public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
+        {
+            var request = _userRepository.GetAllUsers();
+            
+            if (role != null)
+            {
+                switch (role)
+                {
+                    case Role.Customer:
+                        request = request.Where(res => res.Role == Role.Customer);
+                        break;
+                    case Role.Member:
+                        request = request.Where(res => res.Role == Role.Member);
+                        break;
+                    case Role.PenningMaster:
+                        request = request.Where(res => res.Role == Role.PenningMaster);
+                        break;
+                    case Role.BettingCoordinator:
+                        request = request.Where(res => res.Role == Role.BettingCoordinator);
+                        break;
+                    case Role.Instructor:
+                        request = request.Where(res => res.Role == Role.Instructor);
+                        break;
+                    case Role.Administrator:
+                        request = request.Where(res => res.Role == Role.Administrator);
+                        break;
+                }
+            }
+            return Ok(request);
         }
 
         /// <summary>
