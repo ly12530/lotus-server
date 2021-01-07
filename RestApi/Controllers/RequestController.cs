@@ -7,9 +7,11 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestApi.Models;
@@ -36,8 +38,10 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a list of all Requests
+        /// Get a list of all Requests
         /// </summary>
+        /// <param name="isOpen">Show open/closed reqyests</param>
+        /// <param name="date">Show requests matching a specific date</param>
         /// <returns>List of all Requests (open & closed)</returns>
         [HttpGet]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
@@ -66,7 +70,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Get a specific Request by its id
+        /// Get a specific Request by its id
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <returns>Request with the given id</returns>
@@ -83,9 +87,26 @@ namespace RestApi.Controllers
 
         }
 
+        [HttpGet("{id}/subscribers")]
+        public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+
+            if (request == null) return NotFound();
+            
+            var subs = _requestRepository.GetAllRequests().First(r => r.Id == id).Subscribers.ToList();
+
+            // Configure the AutoMapper
+            var conf = new MapperConfiguration(mc => mc.CreateMap<User, MapSubscribersDTO>());
+            var mapper = new Mapper(conf);
+            var subResource = mapper.Map<List<User>, List<MapSubscribersDTO>>(subs);
+            
+            return Ok(subResource);
+        }
+
 
         /// <summary>
-        ///     Create a new request
+        /// Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>
         /// <returns>Request which was created</returns>
@@ -129,7 +150,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Update the IsOpen attribute of the Request
+        /// Update the IsOpen attribute of the Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
@@ -163,7 +184,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///     Update the Start- and EndTime attributes of the Request
+        /// Update the Start- and EndTime attributes of the Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
@@ -190,7 +211,7 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
-        ///  Subscribe function to let Users subscribe to a request
+        /// Subscribe function to let Users subscribe to a request
         /// </summary>
         /// <param name="id"></param>
         /// <param name="subscribeDTO"></param>
@@ -223,6 +244,56 @@ namespace RestApi.Controllers
             return Ok("Succesfully subscribed!");
         }
         
+        /// <summary>
+        /// Update the real time & distance of a Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime & distance</param>
+        /// <returns>Request which had been updated</returns>
+        [HttpPut("{id}/timeanddistance")]
+        public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
+            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
+            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
+
+            await _requestRepository.UpdateRequest(request);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+          
+        }
+        /// <summary>
+        /// Assign a specific member (User) to a Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <param name="subscribeDTO">Body which contains with SubscriberId</param>
+        /// <returns>Request which had been updated</returns>
+        [HttpPut("{id}/assign")]
+        public async Task<ActionResult<SubscribeDTO>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
+
+            request.DesignatedUser = user;
+            user.Jobs.Add(request);
+
+
+            await _requestRepository.UpdateRequest(request);
+            await _userRepository.UpdateUser(user);
+
+            var resultToReturn = request;
+
+            return Ok(resultToReturn);
+        }
+        
+        /// <summary>
+        /// Determine the Lat & Lon of a given Address
+        /// </summary>
+        /// <param name="address">Body which contains the Address details</param>
+        /// <returns>Array with lat & lon values</returns>
         private async Task<double[]> GetGeometry(Address address)
         {
             IList<double> result = new List<double>();
@@ -248,50 +319,6 @@ namespace RestApi.Controllers
             }
 
             return result.ToArray();
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="putRealTimeDistanceRequestDTO"></param>
-        /// <returns></returns>
-        [HttpPut("{id}/timeanddistance")]
-        public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
-        {
-            var request = await _requestRepository.GetRequestById(id);
-            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
-            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
-            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
-
-            await _requestRepository.UpdateRequest(request);
-
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
-          
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="subscribeDTO"></param>
-        /// <returns></returns>
-        [HttpPut("{id}/assign")]
-        public async Task<ActionResult<SubscribeDTO>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
-        {
-            var request = await _requestRepository.GetRequestById(id);
-            var user = await _userRepository.GetUserById(subscribeDTO.UserId);
-
-            request.DesignatedUser = user;
-            user.Jobs.Add(request);
-
-
-            await _requestRepository.UpdateRequest(request);
-            await _userRepository.UpdateUser(user);
-
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
         }
     }
 }

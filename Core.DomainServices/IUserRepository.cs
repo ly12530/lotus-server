@@ -11,5 +11,7 @@ namespace Core.DomainServices
         Task<User> GetUserById(int id);
         Task<User> GetUserByEmail(string emailAddress);
         Task UpdateUser(User user);
+        IQueryable<User> GetUsers();
+        IEnumerable<User> GetUserByRole(Role role);
     }
 }
