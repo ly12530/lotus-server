@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -313,16 +314,24 @@ namespace RestApi.Controllers
             var request = await _requestRepository.GetRequestById(id);
             var user = await _userRepository.GetUserById(subscribeDTO.UserId);
 
-            request.DesignatedUser = user;
-            user.Jobs.Add(request);
+            if (request != null && user != null)
+            {
+                request.DesignatedUser = user;
+                user.Jobs.Add(request);
 
+                await _requestRepository.UpdateRequest(request);
+                await _userRepository.UpdateUser(user);
 
-            await _requestRepository.UpdateRequest(request);
-            await _userRepository.UpdateUser(user);
+                var resultToReturn = request;
 
-            var resultToReturn = request;
+                return Ok(resultToReturn);
+            }
 
-            return Ok(resultToReturn);
+            if (request == null && user == null) return Problem("User and Request do not exist", statusCode: (int)HttpStatusCode.BadRequest);
+            else if (user == null) return Problem("User does not exist", statusCode: (int)HttpStatusCode.BadRequest);
+            else if (request == null) return Problem("Request does not exist", statusCode: (int)HttpStatusCode.BadRequest);
+            
+            return BadRequest();
         }
         
         /// <summary>
