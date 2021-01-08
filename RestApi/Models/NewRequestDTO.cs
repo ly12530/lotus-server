@@ -23,8 +23,6 @@ namespace RestApi.Models
 
         [Required] public bool IsExam { get; set; }
 
-        //[Required] public bool IsOpen { get; set; } = false;
-
         [Required] public LessonType LessonType { get; set; }
     }
 }
