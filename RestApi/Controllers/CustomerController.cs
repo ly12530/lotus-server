@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.Models;
 
@@ -27,7 +28,9 @@ namespace RestApi.Controllers
         /// Get a list of all Customers
         /// </summary>
         /// <returns>List of all Customers</returns>
+        /// <response code="200"/>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<Customer>> GetAll()
         {
             var result = _customerRepository.GetAllCustomers();
@@ -41,7 +44,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="id">Id of the Customer</param>
         /// <returns>Customer with the given Id</returns>
+        /// <response code="200"/>
+        /// <response code="404"/>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Customer>> GetOne(int id)
         {
             if (id == 0) return NotFound();
@@ -51,7 +58,6 @@ namespace RestApi.Controllers
 
             return (result == null) ? NotFound() : Ok(result);
         }
-
-
+        
     }
 }
