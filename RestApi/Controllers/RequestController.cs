@@ -217,9 +217,7 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Updated isOpen");
         }
 
         /// <summary>
@@ -244,9 +242,7 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Updated time successfully");
         }
 
         /// <summary>
@@ -297,9 +293,7 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Real time updated");
           
         }
         /// <summary>
@@ -324,7 +318,7 @@ namespace RestApi.Controllers
 
                 var resultToReturn = request;
 
-                return Ok(resultToReturn);
+                return Ok("Assigned successfully");
             }
 
             if (request == null && user == null) return Problem("User and Request do not exist", statusCode: (int)HttpStatusCode.BadRequest);
