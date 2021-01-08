@@ -45,7 +45,7 @@ namespace RestApi.Controllers
         /// <param name="date">Show requests matching a specific date</param>
         /// <returns>List of all Requests (open and closed)</returns>
         [HttpGet]
-        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
         {
             var requests = _requestRepository.GetAllRequests();
 
@@ -65,6 +65,11 @@ namespace RestApi.Controllers
             if (date != null)
             {
                 requests = requests.Where(res => res.Date.Date == date.Value.Date);
+            }
+
+            if (hasDesignatedUser != null && hasDesignatedUser == true)
+            {
+                requests = requests.Where(res => res.DesignatedUser != null);
             }
             
             // Configure the AutoMapper
