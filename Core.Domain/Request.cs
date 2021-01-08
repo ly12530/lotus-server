@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace Core.Domain
 {
@@ -34,26 +33,20 @@ namespace Core.Domain
 
         //    public ICollection<User>? Instructors { get; set; }
 
-        public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
+        public virtual ICollection<User> Subscribers { get; set; } = new HashSet<User>();
 
         public User DesignatedUser { get; set; }
 
         public bool Subscribe(User user)
         {
-            if (IsOpen)
-            {                
+            if (IsOpen) {
                 Subscribers.Add(user);
                 return true; // Succes
-                
             }
-            else
-            {
-                return false; // Not authorized
-            }
-        }
-        
-        // you may also use List<Student>, but HashSet will guarantee that you are not adding the same Student mistakenly twice
-        
 
+            return false; // Not authorized
+        }
+
+        // you may also use List<Student>, but HashSet will guarantee that you are not adding the same Student mistakenly twice
     }
 }
