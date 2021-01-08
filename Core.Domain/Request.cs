@@ -30,9 +30,9 @@ namespace Core.Domain
 
         public LessonType LessonType { get; set; }
 
-        public bool IsOpen { get; set; }
+        public bool IsOpen { get; set; } = false;
 
-    //    public ICollection<User>? Instructors { get; set; }
+        //    public ICollection<User>? Instructors { get; set; }
 
         public virtual ICollection<User> Subscribers { get; set; }  = new HashSet<User>();
 
