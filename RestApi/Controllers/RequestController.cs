@@ -43,9 +43,10 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="isOpen">Show open/closed reqyests</param>
         /// <param name="date">Show requests matching a specific date</param>
-        /// <returns>List of all Requests (open & closed)</returns>
+        /// <param name="hasDesignatedUser">Show requests which have a designated user</param>
+        /// <returns>List of all Requests (open and closed)</returns>
         [HttpGet]
-        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date)
+        public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
         {
             var requests = _requestRepository.GetAllRequests();
 
@@ -65,6 +66,11 @@ namespace RestApi.Controllers
             if (date != null)
             {
                 requests = requests.Where(res => res.Date.Date == date.Value.Date);
+            }
+
+            if (hasDesignatedUser != null && hasDesignatedUser == true)
+            {
+                requests = requests.Where(res => res.DesignatedUser != null);
             }
             
             // Configure the AutoMapper
@@ -245,9 +251,9 @@ namespace RestApi.Controllers
         /// <summary>
         /// Subscribe function to let Users subscribe to a request
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="subscribeDTO"></param>
-        /// <returns></returns>
+        /// <param name="id">Id of the specific Request</param>
+        /// <param name="subscribeDTO">Body with the attributes of the User which wants to subscribe on the Request</param>
+        /// <returns>Message if subscription was successful</returns>
         [HttpPut("{id}/subscribe")]
         public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
         { 
@@ -262,9 +268,7 @@ namespace RestApi.Controllers
             }
 
             request.Subscribe(user);
-            user.Subscribe(request);  
-
-            
+            user.Subscribe(request);
 
             if (!request.Subscribe(user))
             {
@@ -277,10 +281,10 @@ namespace RestApi.Controllers
         }
         
         /// <summary>
-        /// Update the real time & distance of a Request
+        /// Update the real time and distance of a Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
-        /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime & distance</param>
+        /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime and distance</param>
         /// <returns>Request which had been updated</returns>
         [HttpPut("{id}/timeanddistance")]
         public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
@@ -322,10 +326,10 @@ namespace RestApi.Controllers
         }
         
         /// <summary>
-        /// Determine the Lat & Lon of a given Address
+        /// Determine the Lat and Lon of a given Address
         /// </summary>
         /// <param name="address">Body which contains the Address details</param>
-        /// <returns>Array with lat & lon values</returns>
+        /// <returns>Array with Lat and Lon values</returns>
         private async Task<double[]> GetGeometry(Address address)
         {
             IList<double> result = new List<double>();

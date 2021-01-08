@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using AutoMapper.Configuration.Annotations;
 using Core.Domain;
 
 namespace RestApi.Models
@@ -24,8 +22,6 @@ namespace RestApi.Models
         public string EndTime { get; set; }
 
         [Required] public bool IsExam { get; set; }
-
-        [Required] public bool IsOpen { get; set; } = false;
 
         [Required] public LessonType LessonType { get; set; }
     }
