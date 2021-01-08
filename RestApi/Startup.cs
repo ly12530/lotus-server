@@ -18,6 +18,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace RestApi
 {
@@ -73,14 +75,12 @@ namespace RestApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1");
                 c.RoutePrefix = String.Empty;
-                c.InjectStylesheet("/css/custom.css");
+                c.DefaultModelsExpandDepth(-1);
             });
 
             app.UseHttpsRedirection();

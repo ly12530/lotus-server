@@ -5,12 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -46,7 +49,9 @@ namespace RestApi.Controllers
         /// <param name="date">Show requests matching a specific date</param>
         /// <param name="hasDesignatedUser">Show requests which have a designated user</param>
         /// <returns>List of all Requests (open and closed)</returns>
+        /// <response code="200"/>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
         {
             var requests = _requestRepository.GetAllRequests();
@@ -95,7 +100,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <returns>Request with the given id</returns>
+        /// <response code="200"/>
+        /// <response code="404"/>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Request>> GetOne(int id)
         {
             var result = await _requestRepository.GetRequestById(id);
@@ -118,7 +127,6 @@ namespace RestApi.Controllers
             var reqResource = mapper.Map<List<Request>, List<MapRequestDTO>>(new List<Request>(){result}).First();
 
             return Ok(reqResource);
-
         }
 
         /// <summary>
@@ -126,7 +134,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <returns>List of subscribers of the Request with the given Id</returns>
+        /// <response code="200"/>
+        /// <response code="404"/>
         [HttpGet("{id}/subscribers")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -142,14 +154,17 @@ namespace RestApi.Controllers
             
             return Ok(subResource);
         }
-
-
+        
         /// <summary>
         /// Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>
         /// <returns>Request which was created</returns>
+        /// <response code="201"/>
+        /// <response code="400"/>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
             if (ModelState.IsValid)
@@ -194,8 +209,12 @@ namespace RestApi.Controllers
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
         [HttpPut("{id}/isopen")]
-        public async Task<ActionResult<RequestDTO>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
@@ -217,9 +236,7 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Successfully updated isOpen");
         }
 
         /// <summary>
@@ -228,8 +245,12 @@ namespace RestApi.Controllers
         /// <param name="id">Id of the Request</param>
         /// <param name="requestToChange">Body with the attributes to change of the Request</param>
         /// <returns>Request with updated values</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
         [HttpPut("{id}/dates")]
-        public async Task<ActionResult<RequestDTO>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
 
@@ -244,9 +265,7 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Successfully updated Time(s)");
         }
 
         /// <summary>
@@ -255,10 +274,13 @@ namespace RestApi.Controllers
         /// <param name="id">Id of the specific Request</param>
         /// <param name="subscribeDTO">Body with the attributes of the User which wants to subscribe on the Request</param>
         /// <returns>Message if subscription was successful</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
         [HttpPut("{id}/subscribe")]
-        public async Task<ActionResult<SubscribeDTO>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
-        { 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
+        {
             var request = await _requestRepository.GetRequestById(id);
             var user = await _userRepository.GetUserById(subscribeDTO.UserId);
 
@@ -278,7 +300,7 @@ namespace RestApi.Controllers
             await _requestRepository.UpdateRequest(request);
             await _userRepository.UpdateUser(user);
 
-            return Ok("Succesfully subscribed!");
+            return Ok("Successfully subscribed!");
         }
         
         /// <summary>
@@ -287,8 +309,13 @@ namespace RestApi.Controllers
         /// <param name="id">Id of the Request</param>
         /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime and distance</param>
         /// <returns>Request which had been updated</returns>
-        [HttpPut("{id}/timeanddistance")]
-        public async Task<ActionResult<PutRealTimeDistanceRequestDTO>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
+        /// <response code="200"/>
+        /// <response code="400"/>
+        [ReadOnly(true)]
+        [HttpPut("{id}/timeanddistance"), Obsolete("use {id}/time-and-distance instead")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> OldUpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
             request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
@@ -297,19 +324,46 @@ namespace RestApi.Controllers
 
             await _requestRepository.UpdateRequest(request);
 
-            var resultToReturn = request;
-
-            return Ok(resultToReturn);
+            return Ok("Successfully updated realTime(s)");
           
         }
+        
+        /// <summary>
+        /// Update the real time and distance of a Request
+        /// </summary>
+        /// <param name="id">Id of the Request</param>
+        /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime and distance</param>
+        /// <returns>Request which had been updated</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
+        [HttpPut("{id}/time-and-distance")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
+            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
+            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
+
+            await _requestRepository.UpdateRequest(request);
+
+            return Ok("Successfully updated realTime(s)");
+          
+        }
+        
         /// <summary>
         /// Assign a specific member (User) to a Request
         /// </summary>
         /// <param name="id">Id of the Request</param>
         /// <param name="subscribeDTO">Body which contains with SubscriberId</param>
         /// <returns>Request which had been updated</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
         [HttpPut("{id}/assign")]
-        public async Task<ActionResult<SubscribeDTO>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
             var user = await _userRepository.GetUserById(subscribeDTO.UserId);
@@ -324,7 +378,7 @@ namespace RestApi.Controllers
 
                 var resultToReturn = request;
 
-                return Ok(resultToReturn);
+                return Ok("Assigned successfully");
             }
 
             if (request == null && user == null) return Problem("User and Request do not exist", statusCode: (int)HttpStatusCode.BadRequest);

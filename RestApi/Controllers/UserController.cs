@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.Models;
 using static BCrypt.Net.BCrypt;
@@ -27,7 +28,9 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="role">Role of the User</param>
         /// <returns>Users matching the query</returns>
+        /// <response code="200"/>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
             var request = _userRepository.GetAllUsers();
@@ -64,7 +67,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="registerDto">Body with attributes of the User</param>
         /// <returns>User which had been registered + JWT-token</returns>
+        /// <response code="201"/>
+        /// <response code="400"/>
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
         {
             if (ModelState.IsValid) {
@@ -93,7 +100,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="loginDto">Body with attributes to identity User</param>
         /// <returns>User with matching Email and Password + JWT-token</returns>
+        /// <response code="200"/>
+        /// <response code="401"/>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<User>> Login(LoginDTO loginDto)
         {
             if (ModelState.IsValid) {
@@ -112,7 +123,11 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="id">Id of the specific user</param>
         /// <returns>Specific user with the given Id</returns>
+        /// <response code="200"/>
+        /// <response code="404"/>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<User>> GetById(int id)
         {
             var result = await _userRepository.GetUserById(id);
