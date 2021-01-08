@@ -43,6 +43,7 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="isOpen">Show open/closed reqyests</param>
         /// <param name="date">Show requests matching a specific date</param>
+        /// <param name="hasDesignatedUser">Show requests which have a designated user</param>
         /// <returns>List of all Requests (open and closed)</returns>
         [HttpGet]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
