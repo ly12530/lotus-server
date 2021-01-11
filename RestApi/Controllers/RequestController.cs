@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestApi.Models;
+using RestApi.Services;
 
 namespace RestApi.Controllers
 {
@@ -29,16 +30,16 @@ namespace RestApi.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly AddressService _addressService;
         private readonly IUserRepository _userRepository;
         private readonly ICustomerRepository _customerRepository;
 
         public RequestController(IRequestRepository requestRepository, IUserRepository userRepository,
-            IHttpClientFactory httpClientFactory, ICustomerRepository customerRepository)
+            AddressService addressService, ICustomerRepository customerRepository)
         {
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _httpClientFactory = httpClientFactory;
+            _addressService = addressService;
             _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
         }
 
@@ -177,7 +178,7 @@ namespace RestApi.Controllers
                     Street = requestDto.Address.Street
                 };
 
-                addressToCreate.Geometry = await GetGeometry(addressToCreate);
+                addressToCreate.Geometry = await _addressService.GetGeometryAsync(addressToCreate);
 
                 var customer = await _customerRepository.GetCustomerById(requestDto.CustomerId);
 
@@ -388,36 +389,6 @@ namespace RestApi.Controllers
             return BadRequest();
         }
         
-        /// <summary>
-        /// Determine the Lat and Lon of a given Address
-        /// </summary>
-        /// <param name="address">Body which contains the Address details</param>
-        /// <returns>Array with Lat and Lon values</returns>
-        private async Task<double[]> GetGeometry(Address address)
-        {
-            IList<double> result = new List<double>();
-
-            var addressQuery = $"{address.Street} {address.Number} {address.City}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://photon.komoot.io/api/?q={addressQuery}");
-
-            var client = _httpClientFactory.CreateClient();
-
-            var response = await client.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var json = JsonConvert.DeserializeObject<JObject>(jsonString);
-                var coords = json["features"][0]["geometry"]["coordinates"].ToArray();
-
-                foreach (var coord in coords)
-                {
-                    result.Add(coord.ToObject<double>());
-                }
-            }
-
-            return result.ToArray();
-        }
+        
     }
 }
