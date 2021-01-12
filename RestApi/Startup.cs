@@ -175,6 +175,7 @@ namespace RestApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "LOTUS RESTapi v1");
                 c.RoutePrefix = String.Empty;
+                c.DocumentTitle = "LOTUS RESTapi";
                 c.DefaultModelsExpandDepth(-1);
             });
 
