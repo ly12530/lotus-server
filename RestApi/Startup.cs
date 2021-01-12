@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Core.Domain;
 using Core.DomainServices;
 using Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,6 +22,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using RestApi.Services;
@@ -45,29 +53,87 @@ namespace RestApi
             services.AddScoped<IRequestRepository, RequestRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-
+            
             services.AddSingleton<AddressService>();
-
+            
+            // TODO Create policies for authorization
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.Administrator.GetDisplayName());
+                });
+                options.AddPolicy("MemberOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.Member.GetDisplayName());
+                });
+            });
+            
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters    
+                    {    
+                        ValidateIssuer = true,    
+                        ValidateAudience = true,    
+                        ValidateLifetime = true,    
+                        ValidateIssuerSigningKey = true,    
+                        ValidIssuer = Configuration["Jwt:Issuer"],    
+                        ValidAudience = Configuration["Jwt:Issuer"],    
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))    
+                    };
+                });
+            
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c => 
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    c.SwaggerDoc("v1", new OpenApiInfo
+                    Version = "v1",
+                    Title = "LOTUS RESTapi",
+                    Description = "A RESTful backend API for the LOTUS 2021 project",
+                    Contact = new OpenApiContact
                     {
-                        Version = "v1",
-                        Title = "LOTUS RESTapi",
-                        Description = "A RESTful backend API for the LOTUS 2021 project",
-                        Contact = new OpenApiContact
-                        {
-                            Name = "Crypit",
-                            Email = String.Empty,
-                            Url = new Uri("https://github.com/Crypit-Coders-Inc")
-                        }
-                    });
-
-                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    c.IncludeXmlComments(xmlPath);
+                        Name = "Crypit",
+                        Email = String.Empty,
+                        Url = new Uri("https://github.com/Crypit-Coders-Inc")
+                    }
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
+                var jwtSecurityScheme = new OpenApiSecurityScheme()
+                {
+                    Name = "Bearer",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                
+                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+                
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { jwtSecurityScheme, Array.Empty<string>() }
+                });
+            });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,8 +162,9 @@ namespace RestApi
                 .AllowAnyOrigin()
             );
 
+            app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

@@ -20,7 +20,7 @@ namespace Infrastructure
 
         public IQueryable<User> GetAllUsers()
         {
-            return _context.Users;
+            return _context.Users.Include(user => user.Jobs);
         }
 
         public async Task RegisterUser(User newUser)

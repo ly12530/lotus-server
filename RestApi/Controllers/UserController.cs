@@ -1,26 +1,41 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.Configuration;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using Microsoft.VisualBasic;
 using RestApi.Models;
 using static BCrypt.Net.BCrypt;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace RestApi.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _config;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, IConfiguration config)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _config = config;
         }
         
         /// <summary>
@@ -31,35 +46,47 @@ namespace RestApi.Controllers
         /// <response code="200"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [AllowAnonymous]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
-            var request = _userRepository.GetAllUsers();
+            var users = _userRepository.GetAllUsers();
             
             if (role != null)
             {
                 switch (role)
                 {
                     case Role.Customer:
-                        request = request.Where(res => res.Role == Role.Customer);
+                        users = users.Where(res => res.Role == Role.Customer);
                         break;
                     case Role.Member:
-                        request = request.Where(res => res.Role == Role.Member);
+                        users = users.Where(res => res.Role == Role.Member);
                         break;
                     case Role.PenningMaster:
-                        request = request.Where(res => res.Role == Role.PenningMaster);
+                        users = users.Where(res => res.Role == Role.PenningMaster);
                         break;
                     case Role.BettingCoordinator:
-                        request = request.Where(res => res.Role == Role.BettingCoordinator);
+                        users = users.Where(res => res.Role == Role.BettingCoordinator);
                         break;
                     case Role.Instructor:
-                        request = request.Where(res => res.Role == Role.Instructor);
+                        users = users.Where(res => res.Role == Role.Instructor);
                         break;
                     case Role.Administrator:
-                        request = request.Where(res => res.Role == Role.Administrator);
+                        users = users.Where(res => res.Role == Role.Administrator);
                         break;
                 }
             }
-            return Ok(request);
+
+            var conf = new MapperConfiguration(mc =>
+            {
+                mc.CreateMap<Request, MapUserDTO.MapUserJobsDTO>();
+                mc.CreateMap<User, MapUserDTO>()
+                    .ForMember(user => user.Jobs, opt => opt.MapFrom(user => user.Jobs));
+            });
+
+            var mapper = new Mapper(conf);
+            var mappedUser = mapper.Map<IList<User>, IList<MapUserDTO>>(users.ToList());
+            
+            return Ok(mappedUser);
         }
 
         /// <summary>
@@ -69,10 +96,13 @@ namespace RestApi.Controllers
         /// <returns>User which had been registered + JWT-token</returns>
         /// <response code="201"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult<MapUserAuthDTO>> Register(RegisterDTO registerDto)
         {
             if (ModelState.IsValid) {
                 var hashPassword = HashPassword(registerDto.Password, 12);
@@ -88,7 +118,17 @@ namespace RestApi.Controllers
 
                     await _userRepository.RegisterUser(userToRegister);
 
-                    return CreatedAtAction(nameof(GetById), new {id = userToRegister.Id}, userToRegister);
+                    var conf = new MapperConfiguration(mc =>
+                    {
+                        mc.CreateMap<User, MapUserAuthDTO>();
+                    });
+
+                    var mapper = new Mapper(conf);
+                    var mappedUser = mapper.Map<User, MapUserAuthDTO>(userToRegister);
+
+                    mappedUser.Token = GenerateJSONWebToken(mappedUser, userToRegister.Role.GetDisplayName());
+
+                    return CreatedAtAction(nameof(GetById), new {id = mappedUser.Id}, mappedUser);
                 }
             }
 
@@ -105,13 +145,25 @@ namespace RestApi.Controllers
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<User>> Login(LoginDTO loginDto)
+        [AllowAnonymous]
+        public async Task<ActionResult<MapUserAuthDTO>> Login(LoginDTO loginDto)
         {
             if (ModelState.IsValid) {
                 var foundUser = await _userRepository.GetUserByEmail(loginDto.EmailAddress);
 
-                if (Verify(loginDto.Password, foundUser.Password)) {
-                    return Ok(foundUser);
+                if (Verify(loginDto.Password, foundUser.Password))
+                {
+                    var conf = new MapperConfiguration(mc =>
+                    {
+                        mc.CreateMap<User, MapUserAuthDTO>();
+                    });
+
+                    var mapper = new Mapper(conf);
+                    var mappedFoundUser = mapper.Map<User, MapUserAuthDTO>(foundUser);
+
+                    mappedFoundUser.Token = GenerateJSONWebToken(mappedFoundUser, foundUser.Role.GetDisplayName());
+                    
+                    return Ok(mappedFoundUser);
                 }
             }
 
@@ -135,5 +187,23 @@ namespace RestApi.Controllers
             return result == null ? NotFound() : Ok(result);
         }
         
+        private string GenerateJSONWebToken(MapUserAuthDTO userAuth, string role)    
+        {    
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));    
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Role, role)
+            };
+    
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],    
+                _config["Jwt:Issuer"],    
+                claims,
+                expires: DateTime.Now.AddMinutes(120),    
+                signingCredentials: credentials);    
+    
+            return new JwtSecurityTokenHandler().WriteToken(token);    
+        }
     }
 }

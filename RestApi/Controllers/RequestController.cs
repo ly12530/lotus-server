@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -160,12 +162,14 @@ namespace RestApi.Controllers
         /// Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>
+        /// <typeparam name="bearer"></typeparam>
         /// <returns>Request which was created</returns>
         /// <response code="201"/>
         /// <response code="400"/>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
             if (ModelState.IsValid)
