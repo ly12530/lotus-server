@@ -59,13 +59,34 @@ namespace RestApi
             // TODO Create policies for authorization
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy =>
-                {
-                    policy.RequireClaim(ClaimTypes.Role, Role.Administrator.GetDisplayName());
-                });
+                // Member
                 options.AddPolicy("MemberOnly", policy =>
                 {
                     policy.RequireClaim(ClaimTypes.Role, Role.Member.GetDisplayName());
+                });
+                
+                // PenningMaster
+                options.AddPolicy("PenningMasterOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.PenningMaster.GetDisplayName());
+                });
+                
+                // BettingCoordinator
+                options.AddPolicy("BettingCoordinatorOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.BettingCoordinator.GetDisplayName());
+                });
+                
+                // Instructor
+                options.AddPolicy("InstructorOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.Instructor.GetDisplayName());
+                }); 
+                
+                // Administrator
+                options.AddPolicy("AdminOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.Administrator.GetDisplayName());
                 });
             });
             
