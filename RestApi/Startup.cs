@@ -56,9 +56,14 @@ namespace RestApi
             
             services.AddSingleton<AddressService>();
             
-            // TODO Create policies for authorization
             services.AddAuthorization(options =>
             {
+                // Customer
+                options.AddPolicy("CustomerOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, Role.Customer.GetDisplayName());
+                });
+                
                 // Member
                 options.AddPolicy("MemberOnly", policy =>
                 {

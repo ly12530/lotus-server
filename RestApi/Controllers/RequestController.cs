@@ -29,6 +29,7 @@ namespace RestApi.Controllers
     [Route("/api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize(Policy = "AdminOnly", AuthenticationSchemes = "Bearer")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
@@ -55,6 +56,7 @@ namespace RestApi.Controllers
         /// <response code="200"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [AllowAnonymous]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
         {
             var requests = _requestRepository.GetAllRequests();
@@ -108,6 +110,7 @@ namespace RestApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         public async Task<ActionResult<Request>> GetOne(int id)
         {
             var result = await _requestRepository.GetRequestById(id);
@@ -142,6 +145,7 @@ namespace RestApi.Controllers
         [HttpGet("{id}/subscribers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -162,14 +166,13 @@ namespace RestApi.Controllers
         /// Create a new request
         /// </summary>
         /// <param name="requestDto">Body with attributes of the Request</param>
-        /// <typeparam name="bearer"></typeparam>
         /// <returns>Request which was created</returns>
         /// <response code="201"/>
         /// <response code="400"/>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
             if (ModelState.IsValid)
@@ -216,9 +219,12 @@ namespace RestApi.Controllers
         /// <returns>Request with updated values</returns>
         /// <response code="200"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPut("{id}/isopen")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<string>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -255,6 +261,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/dates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<string>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -284,6 +291,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/subscribe")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "MemberOnly")]
         public async Task<ActionResult<string>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -307,32 +315,7 @@ namespace RestApi.Controllers
 
             return Ok("Successfully subscribed!");
         }
-        
-        /// <summary>
-        /// Update the real time and distance of a Request
-        /// </summary>
-        /// <param name="id">Id of the Request</param>
-        /// <param name="putRealTimeDistanceRequestDTO">Body with attributes which contains real starttime and distance</param>
-        /// <returns>Request which had been updated</returns>
-        /// <response code="200"/>
-        /// <response code="400"/>
-        [ReadOnly(true)]
-        [HttpPut("{id}/timeanddistance"), Obsolete("use {id}/time-and-distance instead")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<string>> OldUpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
-        {
-            var request = await _requestRepository.GetRequestById(id);
-            request.RealStartTime = putRealTimeDistanceRequestDTO.RealStartTime;
-            request.RealEndTime = putRealTimeDistanceRequestDTO.RealEndTime;
-            request.DistanceTraveled = putRealTimeDistanceRequestDTO.DistanceTraveled;
 
-            await _requestRepository.UpdateRequest(request);
-
-            return Ok("Successfully updated realTime(s)");
-          
-        }
-        
         /// <summary>
         /// Update the real time and distance of a Request
         /// </summary>
@@ -344,6 +327,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/time-and-distance")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "MemberOnly")]
         public async Task<ActionResult<string>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -368,6 +352,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/assign")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<string>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);

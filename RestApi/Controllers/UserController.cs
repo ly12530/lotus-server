@@ -46,7 +46,6 @@ namespace RestApi.Controllers
         /// <response code="200"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [AllowAnonymous]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
             var users = _userRepository.GetAllUsers();
