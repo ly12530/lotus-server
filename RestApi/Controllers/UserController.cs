@@ -44,8 +44,12 @@ namespace RestApi.Controllers
         /// <param name="role">Role of the User</param>
         /// <returns>Users matching the query</returns>
         /// <response code="200"/>
+        /// <response code="403"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "BettingCoordinator")]
+        [Authorize(Policy = "AdminOnly")]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
             var users = _userRepository.GetAllUsers();
@@ -186,6 +190,12 @@ namespace RestApi.Controllers
             return result == null ? NotFound() : Ok(result);
         }
         
+        /// <summary>
+        /// Generate new JSON webtoken
+        /// </summary>
+        /// <param name="userAuth">Mapped Users which is authenticated</param>
+        /// <param name="role">Display name of the role</param>
+        /// <returns></returns>
         private string GenerateJSONWebToken(MapUserAuthDTO userAuth, string role)    
         {    
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));    
@@ -193,6 +203,7 @@ namespace RestApi.Controllers
 
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, userAuth.Id.ToString()),
                 new Claim(ClaimTypes.Role, role)
             };
     

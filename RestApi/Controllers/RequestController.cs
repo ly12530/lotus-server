@@ -29,7 +29,7 @@ namespace RestApi.Controllers
     [Route("/api/[controller]")]
     [ApiController]
     [Produces("application/json")]
-    [Authorize(Policy = "AdminOnly", AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
@@ -54,9 +54,10 @@ namespace RestApi.Controllers
         /// <param name="hasDesignatedUser">Show requests which have a designated user</param>
         /// <returns>List of all Requests (open and closed)</returns>
         /// <response code="200"/>
+        /// <response code="403"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<List<Request>> GetAll([FromQuery] bool? isOpen, [FromQuery] DateTime? date, [FromQuery] bool? hasDesignatedUser)
         {
             var requests = _requestRepository.GetAllRequests();
@@ -107,10 +108,11 @@ namespace RestApi.Controllers
         /// <returns>Request with the given id</returns>
         /// <response code="200"/>
         /// <response code="404"/>
+        /// <response code="403"/>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<Request>> GetOne(int id)
         {
             var result = await _requestRepository.GetRequestById(id);
@@ -142,10 +144,11 @@ namespace RestApi.Controllers
         /// <returns>List of subscribers of the Request with the given Id</returns>
         /// <response code="200"/>
         /// <response code="404"/>
+        /// <response code="403"/>
         [HttpGet("{id}/subscribers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<Request>> GetRequestSubscribers(int id)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -169,10 +172,11 @@ namespace RestApi.Controllers
         /// <returns>Request which was created</returns>
         /// <response code="201"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<RequestDTO>> AddNewRequest(NewRequestDTO requestDto)
         {
             if (ModelState.IsValid)
@@ -225,6 +229,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "BettingCoordinatorOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<string>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -262,6 +267,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Policy = "BettingCoordinatorOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<string>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -288,10 +294,11 @@ namespace RestApi.Controllers
         /// <returns>Message if subscription was successful</returns>
         /// <response code="200"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPut("{id}/subscribe")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Policy = "MemberOnly")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<string>> Subscribe(int id, [FromBody] SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -324,9 +331,11 @@ namespace RestApi.Controllers
         /// <returns>Request which had been updated</returns>
         /// <response code="200"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPut("{id}/time-and-distance")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "MemberOnly")]
         public async Task<ActionResult<string>> UpdateTimeAndDistance(int id, [FromBody]PutRealTimeDistanceRequestDTO putRealTimeDistanceRequestDTO)
         {
@@ -349,10 +358,13 @@ namespace RestApi.Controllers
         /// <returns>Request which had been updated</returns>
         /// <response code="200"/>
         /// <response code="400"/>
+        /// <response code="403"/>
         [HttpPut("{id}/assign")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Policy = "BettingCoordinatorOnly")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<string>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
