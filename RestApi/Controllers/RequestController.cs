@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestApi.Mappers;
 using RestApi.Models;
 using RestApi.Services;
 
@@ -85,18 +86,7 @@ namespace RestApi.Controllers
                 requests = requests.Where(res => res.DesignatedUser != null);
             }
             
-            // Configure the AutoMapper
-            var conf = new MapperConfiguration(mc =>
-            {
-                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
-                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
-                mc.CreateMap<Request, MapRequestDTO>()
-                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
-                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
-                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
-            });
-            var mapper = new Mapper(conf);
-            var requestSource = mapper.Map<List<Request>, List<MapRequestDTO>>(requests.ToList());
+            var requestSource = RequestMapper.MapToRequestDTOList(requests.ToList());
 
             return Ok(requestSource);
         }
@@ -121,18 +111,7 @@ namespace RestApi.Controllers
             
             result.Customer = await _customerRepository.GetCustomerById(result.CustomerId);
             
-            // Configure the AutoMapper
-            var conf = new MapperConfiguration(mc =>
-            {
-                mc.CreateMap<Customer, MapRequestDTO.MapRequestCustomer>();
-                mc.CreateMap<User, MapRequestDTO.MapRequestUser>();
-                mc.CreateMap<Request, MapRequestDTO>()
-                    .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
-                    .ForMember(dest => dest.Subscribers, opt => opt.MapFrom(src => src.Subscribers))
-                    .ForMember(dest => dest.DesignatedUser, opt => opt.MapFrom(src => src.DesignatedUser));
-            });
-            var mapper = new Mapper(conf);
-            var reqResource = mapper.Map<List<Request>, List<MapRequestDTO>>(new List<Request>(){result}).First();
+            var reqResource = RequestMapper.MapToRequestDTO(result);
 
             return Ok(reqResource);
         }
@@ -157,10 +136,7 @@ namespace RestApi.Controllers
             
             var subs = _requestRepository.GetAllRequests().First(r => r.Id == id).Subscribers.ToList();
 
-            // Configure the AutoMapper
-            var conf = new MapperConfiguration(mc => mc.CreateMap<User, MapSubscribersDTO>());
-            var mapper = new Mapper(conf);
-            var subResource = mapper.Map<List<User>, List<MapSubscribersDTO>>(subs);
+            var subResource = RequestMapper.MapToSubscriberDTOList(subs);
             
             return Ok(subResource);
         }
@@ -228,8 +204,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -266,8 +241,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/dates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -363,8 +337,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
