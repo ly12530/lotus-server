@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.VisualBasic;
+using RestApi.Mappers;
 using RestApi.Models;
 using static BCrypt.Net.BCrypt;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -79,17 +80,9 @@ namespace RestApi.Controllers
                 }
             }
 
-            var conf = new MapperConfiguration(mc =>
-            {
-                mc.CreateMap<Request, MapUserDTO.MapUserJobsDTO>();
-                mc.CreateMap<User, MapUserDTO>()
-                    .ForMember(user => user.Jobs, opt => opt.MapFrom(user => user.Jobs));
-            });
-
-            var mapper = new Mapper(conf);
-            var mappedUser = mapper.Map<IList<User>, IList<MapUserDTO>>(users.ToList());
+            var mappedUsers = UserMapper.ToUserDTOList(users.ToList());
             
-            return Ok(mappedUser);
+            return Ok(mappedUsers);
         }
 
         /// <summary>
@@ -120,14 +113,8 @@ namespace RestApi.Controllers
                     };
 
                     await _userRepository.RegisterUser(userToRegister);
-
-                    var conf = new MapperConfiguration(mc =>
-                    {
-                        mc.CreateMap<User, MapUserAuthDTO>();
-                    });
-
-                    var mapper = new Mapper(conf);
-                    var mappedUser = mapper.Map<User, MapUserAuthDTO>(userToRegister);
+                    
+                    var mappedUser = UserMapper.ToUserAuthDTO(userToRegister);
 
                     mappedUser.Token = GenerateJSONWebToken(mappedUser, userToRegister.Role.GetDisplayName());
 
@@ -158,13 +145,7 @@ namespace RestApi.Controllers
 
                 if (Verify(loginDto.Password, foundUser.Password))
                 {
-                    var conf = new MapperConfiguration(mc =>
-                    {
-                        mc.CreateMap<User, MapUserAuthDTO>();
-                    });
-
-                    var mapper = new Mapper(conf);
-                    var mappedFoundUser = mapper.Map<User, MapUserAuthDTO>(foundUser);
+                    var mappedFoundUser = UserMapper.ToUserAuthDTO(foundUser);
 
                     mappedFoundUser.Token = GenerateJSONWebToken(mappedFoundUser, foundUser.Role.GetDisplayName());
                     
