@@ -154,6 +154,8 @@ namespace RestApi.Controllers
             if (ModelState.IsValid) {
                 var foundUser = await _userRepository.GetUserByEmail(loginDto.EmailAddress);
 
+                if (foundUser == null) return Unauthorized();
+
                 if (Verify(loginDto.Password, foundUser.Password))
                 {
                     var conf = new MapperConfiguration(mc =>
