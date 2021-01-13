@@ -49,8 +49,7 @@ namespace RestApi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingCoordinator")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public ActionResult<List<User>> GetAllUsers([FromQuery] Role? role)
         {
             var users = _userRepository.GetAllUsers();

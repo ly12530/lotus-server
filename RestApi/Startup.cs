@@ -91,7 +91,13 @@ namespace RestApi
                 // Administrator
                 options.AddPolicy("AdminOnly", policy =>
                 {
-                    policy.RequireClaim("Role", Role.Administrator.GetDisplayName());
+                        policy.RequireClaim("Role", Role.Administrator.GetDisplayName());
+                });
+                
+                // Admins & Bettingmasters
+                options.AddPolicy("AdminAndBettingMasterOnly", policy =>
+                {
+                    policy.RequireClaim("Role", new [] {Role.Administrator.GetDisplayName(), Role.BettingCoordinator.GetDisplayName()});
                 });
             });
             

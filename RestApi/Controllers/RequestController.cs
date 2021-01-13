@@ -204,8 +204,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> UpdateIsOpen(int id, [FromBody] PutIsOpenRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -242,8 +241,7 @@ namespace RestApi.Controllers
         [HttpPut("{id}/dates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> UpdateTime(int id, [FromBody] PutTimeRequestDTO requestToChange)
         {
             var request = await _requestRepository.GetRequestById(id);
@@ -339,8 +337,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingCoordinatorOnly")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
         public async Task<ActionResult<string>> AssignUser(int id, [FromBody]SubscribeDTO subscribeDTO)
         {
             var request = await _requestRepository.GetRequestById(id);
