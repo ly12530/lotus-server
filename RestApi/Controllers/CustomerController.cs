@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.Models;
@@ -13,6 +14,10 @@ namespace RestApi.Controllers
     [Route("/api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "BettingCoordinatorOnly")]
+    [Authorize(Policy = "CustomerOnly")]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
@@ -29,8 +34,10 @@ namespace RestApi.Controllers
         /// </summary>
         /// <returns>List of all Customers</returns>
         /// <response code="200"/>
+        /// <response code="403"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<List<Customer>> GetAll()
         {
             var result = _customerRepository.GetAllCustomers();
@@ -46,9 +53,11 @@ namespace RestApi.Controllers
         /// <returns>Customer with the given Id</returns>
         /// <response code="200"/>
         /// <response code="404"/>
+        /// <response code="403"/>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<Customer>> GetOne(int id)
         {
             if (id == 0) return NotFound();
