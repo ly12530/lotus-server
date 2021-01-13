@@ -203,8 +203,8 @@ namespace RestApi.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userAuth.Id.ToString()),
-                new Claim(ClaimTypes.Role, role)
+                new Claim("UserId", userAuth.Id.ToString()),
+                new Claim("Role", role)
             };
     
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],    
