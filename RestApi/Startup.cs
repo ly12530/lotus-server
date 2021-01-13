@@ -61,37 +61,37 @@ namespace RestApi
                 // Customer
                 options.AddPolicy("CustomerOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.Customer.GetDisplayName());
+                    policy.RequireClaim("Role", Role.Customer.GetDisplayName());
                 });
                 
                 // Member
                 options.AddPolicy("MemberOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.Member.GetDisplayName());
+                    policy.RequireClaim("Role", Role.Member.GetDisplayName());
                 });
                 
                 // PenningMaster
                 options.AddPolicy("PenningMasterOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.PenningMaster.GetDisplayName());
+                    policy.RequireClaim("Role", Role.PenningMaster.GetDisplayName());
                 });
                 
                 // BettingCoordinator
                 options.AddPolicy("BettingCoordinatorOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.BettingCoordinator.GetDisplayName());
+                    policy.RequireClaim("Role", Role.BettingCoordinator.GetDisplayName());
                 });
                 
                 // Instructor
                 options.AddPolicy("InstructorOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.Instructor.GetDisplayName());
+                    policy.RequireClaim("Role", Role.Instructor.GetDisplayName());
                 }); 
                 
                 // Administrator
                 options.AddPolicy("AdminOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, Role.Administrator.GetDisplayName());
+                    policy.RequireClaim("Role", Role.Administrator.GetDisplayName());
                 });
             });
             
