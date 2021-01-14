@@ -55,6 +55,7 @@ namespace RestApi
             services.AddScoped<IUserRepository, UserRepository>();
             
             services.AddSingleton<AddressService>();
+            services.AddSingleton<NotificationService>();
             
             services.AddAuthorization(options =>
             {
@@ -91,7 +92,13 @@ namespace RestApi
                 // Administrator
                 options.AddPolicy("AdminOnly", policy =>
                 {
-                    policy.RequireClaim("Role", Role.Administrator.GetDisplayName());
+                        policy.RequireClaim("Role", Role.Administrator.GetDisplayName());
+                });
+                
+                // Admins & Bettingmasters
+                options.AddPolicy("AdminAndBettingMasterOnly", policy =>
+                {
+                    policy.RequireClaim("Role", new [] {Role.Administrator.GetDisplayName(), Role.BettingCoordinator.GetDisplayName()});
                 });
             });
             
