@@ -37,14 +37,16 @@ namespace RestApi.Controllers
         private readonly AddressService _addressService;
         private readonly IUserRepository _userRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly NotificationService _notificationService;
 
         public RequestController(IRequestRepository requestRepository, IUserRepository userRepository,
-            AddressService addressService, ICustomerRepository customerRepository)
+            AddressService addressService, ICustomerRepository customerRepository, NotificationService notificationService)
         {
             _requestRepository = requestRepository ?? throw new ArgumentNullException(nameof(requestRepository));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _addressService = addressService;
             _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -362,7 +364,29 @@ namespace RestApi.Controllers
             
             return BadRequest();
         }
-        
-        
+
+        /// <summary>
+        /// Send request with notification to user
+        /// </summary>
+        /// <param name="notifyRequest">Body with the attributes for notifications</param>
+        /// <returns>Message if request was send successfully</returns>
+        [HttpPost("notify-interests")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "BettingMasterOnly")]
+        public async Task<ActionResult<string>> SendNotificationInterests(NotifyRequestDTO notifyRequest)
+        {
+            try
+            {
+                await _notificationService.SendRequestNotification(notifyRequest.senderId, notifyRequest.receiverId);
+            }
+            catch
+            {
+                return BadRequest("Notification failed");
+            }
+
+            return Ok("Notification send");
+        }
     }
 }

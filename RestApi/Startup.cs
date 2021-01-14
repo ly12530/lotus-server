@@ -55,6 +55,7 @@ namespace RestApi
             services.AddScoped<IUserRepository, UserRepository>();
             
             services.AddSingleton<AddressService>();
+            services.AddSingleton<NotificationService>();
             
             services.AddAuthorization(options =>
             {
