@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Internal;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -374,12 +375,18 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [Authorize(Policy = "BettingMasterOnly")]
+        [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<string>> SendNotificationInterests(NotifyRequestDTO notifyRequest)
         {
+            var sender = await _userRepository.GetUserById(notifyRequest.senderId);
+            var receivers = new List<User>();
+            foreach (var receiverId in notifyRequest.receiverIds) {
+                receivers.Add(await _userRepository.GetUserById(receiverId));
+            }
+            
             try
             {
-                await _notificationService.SendRequestNotification(notifyRequest.senderId, notifyRequest.receiverId);
+                await _notificationService.SendRequestNotification(sender, receivers);
             }
             catch
             {
