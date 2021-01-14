@@ -203,5 +203,33 @@ namespace Core.Domain.Test
             // Assert
             Assert.True(thrownException);
         }
+
+        [Fact]
+        public void User_Should_Only_Be_Allowed_To_Subscribe_When_Request_IsOpen_equals_true()
+        {
+            // Arrange
+            var request = new Request { IsOpen = true };
+            var user = new User();
+
+            // Act
+            var subscribed = user.Subscribe(request);
+
+            // Assert
+            Assert.True(subscribed);
+        }
+
+        [Fact]
+        public void User_Should_Not_Be_Allowed_To_Subscribe_When_Request_IsOpen_equals_false()
+        {
+            // Arrange
+            var request = new Request { IsOpen = false };
+            var user = new User();
+
+            // Act
+            var subscribed = user.Subscribe(request);
+
+            // Assert
+            Assert.False(subscribed);
+        }
     }
 }
