@@ -365,17 +365,24 @@ namespace RestApi.Controllers
             return BadRequest();
         }
 
-        [HttpPost("{id}/notify-interests")]
+        /// <summary>
+        /// Send request with notification to user
+        /// </summary>
+        /// <param name="notifyRequest">Body with the attributes for notifications</param>
+        /// <returns>Message if request was send successfully</returns>
+        [HttpPost("notify-interests")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<string>> SendNotificationInterests(NotifyRequestDTO notifyRequest)
         {
             try
             {
                 await _notificationService.SendRequestNotification(notifyRequest.senderId, notifyRequest.receiverId);
-
             }
             catch
             {
-                return BadRequest();
+                return BadRequest("Notification failed");
             }
 
             return Ok("Notification send");
