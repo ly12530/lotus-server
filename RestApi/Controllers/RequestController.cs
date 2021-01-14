@@ -374,6 +374,7 @@ namespace RestApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "BettingMasterOnly")]
         public async Task<ActionResult<string>> SendNotificationInterests(NotifyRequestDTO notifyRequest)
         {
             try
