@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Domain;
@@ -20,7 +21,7 @@ namespace RestApi.Services
             _config = config;
         }
         
-        public async Task<bool> SendRequestNotification(User sender, IEnumerable<User> receivers)
+        public async Task<bool> SendShowInterestsNotification(User sender, IEnumerable<User> receivers)
         {
             if (sender == null && receivers == null || receivers == null || sender == null)
                 throw new NullReferenceException();
@@ -34,21 +35,56 @@ namespace RestApi.Services
 
                 message.Body = new TextPart("plain")
                 {
-                    Text = @$"Geachte {receiver.UserName},
+                    Text = $@"Geachte {receiver.UserName},
 
 {sender.UserName} wilt dat je interesse toont in de openstaande aanvragen
 
--- Send using MailKit via Outlook SMTP"
+-- Sent using MailKit"
 
                 };
 
                 using (var client = new SmtpClient())
                 {
-                    await client.ConnectAsync(_config["Mail:Server"], 587, SecureSocketOptions.StartTls);
+                    await client.ConnectAsync(_config["Mail:Server"], Int32.Parse(_config["Mail:Port"]), SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);
                 }    
+            }
+            
+            return true;
+        }
+
+        public async Task<bool> SendNewRequestNotification(Request openedRequest, List<User> bettingCoordinators)
+        {
+            if (openedRequest == null && bettingCoordinators == null || openedRequest == null ||
+                bettingCoordinators == null) throw new NullReferenceException();
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Lotus Notifier", _config["Mail:Email"]));
+            foreach (var bettingCoordinator in bettingCoordinators)
+            {
+                message.To.Add(new MailboxAddress(bettingCoordinator.UserName, bettingCoordinator.EmailAddress));
+            }
+
+            message.Subject = $"{openedRequest.Customer.Name} heeft een nieuwe aanvraag toegevoegd";
+            message.Body = new TextPart("plain")
+            {
+                Text = $@"Geachte inzetcoördinatoren,
+
+{openedRequest.Customer.Name} heeft een nieuwe aanvraag {openedRequest.Title} aangemaakt.
+
+ 
+-- Sent using MailKit"
+                
+            };
+
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(_config["Mail:Server"], Int32.Parse(_config["Mail:Port"]), SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
             
             return true;

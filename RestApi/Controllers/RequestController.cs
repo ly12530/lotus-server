@@ -187,6 +187,12 @@ namespace RestApi.Controllers
                     };
 
                     await _requestRepository.AddRequest(requestToCreate);
+
+                    var bettingCoors = _userRepository.GetAllUsers().Where(u => u.Role == Role.BettingCoordinator)
+                        .ToList();
+
+                    await _notificationService.SendNewRequestNotification(requestToCreate, bettingCoors);
+                    
                     return CreatedAtAction(nameof(GetOne), new {id = requestToCreate.Id}, requestToCreate);
                 }
             }
@@ -386,7 +392,7 @@ namespace RestApi.Controllers
             
             try
             {
-                await _notificationService.SendRequestNotification(sender, receivers);
+                await _notificationService.SendShowInterestsNotification(sender, receivers);
             }
             catch
             {
