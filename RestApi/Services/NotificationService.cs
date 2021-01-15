@@ -21,7 +21,7 @@ namespace RestApi.Services
             _config = config;
         }
         
-        public async Task<bool> SendShowInterestsNotification(User sender, IEnumerable<User> receivers)
+        public async Task<bool> SendShowInterestsNotification(User sender, IEnumerable<User> receivers, string title, string body)
         {
             if (sender == null && receivers == null || receivers == null || sender == null)
                 throw new NullReferenceException();
@@ -31,15 +31,11 @@ namespace RestApi.Services
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress(sender.UserName, _config["Mail:Email"]));
                 message.To.Add(new MailboxAddress(receiver.UserName, receiver.EmailAddress));
-                message.Subject = $"{sender.UserName} heeft voor uw interesse gevraagd";
+                message.Subject = title;
 
                 message.Body = new TextPart("plain")
                 {
-                    Text = $@"Geachte {receiver.UserName},
-
-{sender.UserName} wilt dat je interesse toont in de openstaande aanvragen
-
--- Sent using MailKit"
+                    Text = $@"{body}"
 
                 };
 

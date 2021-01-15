@@ -384,15 +384,15 @@ namespace RestApi.Controllers
         [Authorize(Policy = "BettingCoordinatorOnly")]
         public async Task<ActionResult<string>> SendNotificationInterests(NotifyRequestDTO notifyRequest)
         {
-            var sender = await _userRepository.GetUserById(notifyRequest.senderId);
+            var sender = await _userRepository.GetUserById(notifyRequest.SenderId);
             var receivers = new List<User>();
-            foreach (var receiverId in notifyRequest.receiverIds) {
+            foreach (var receiverId in notifyRequest.ReceiverIds) {
                 receivers.Add(await _userRepository.GetUserById(receiverId));
             }
             
             try
             {
-                await _notificationService.SendShowInterestsNotification(sender, receivers);
+                await _notificationService.SendShowInterestsNotification(sender, receivers, notifyRequest.Title, notifyRequest.Body);
             }
             catch
             {
