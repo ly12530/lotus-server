@@ -15,9 +15,6 @@ namespace RestApi.Controllers
     [ApiController]
     [Produces("application/json")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Policy = "AdminOnly")]
-    [Authorize(Policy = "BettingCoordinatorOnly")]
-    [Authorize(Policy = "CustomerOnly")]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
