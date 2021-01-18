@@ -66,7 +66,7 @@ namespace RestApi.Services
             message.Subject = $"{openedRequest.Customer.Name} heeft een nieuwe aanvraag toegevoegd";
             message.Body = new TextPart("plain")
             {
-                Text = $@"Geachte inzetcoördinaat,
+                Text = $@"Geachte inzetcoördinator,
 
 {openedRequest.Customer.Name} heeft een nieuwe aanvraag {openedRequest.Title} aangemaakt.
 
