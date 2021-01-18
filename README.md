@@ -24,3 +24,6 @@ If you want to build the Docker container yourself, you'll have to follow the fo
 2. Open the `RestApi/appsettings.Docker.json` file and change the _Key_ and _Issuer_ in the **Jwt** section
 3. Build the Docker container using `docker-compose build`
 4. As soon as the container is build, you can run the container by running `docker-compose up [-d]` (_use `-d` if you want to run it as Daemon_)
+
+## License
+None specified yet
