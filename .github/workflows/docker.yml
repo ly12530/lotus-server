@@ -46,7 +46,7 @@ jobs:
     strategy:
       matrix:
         heroku_api: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app ${{ secrets.HEROKU_APP_NAME }}
+        heroku_app: ${{ secrets.HEROKU_APP_NAME }}
 
     steps:
     - uses: actions/checkout@v2
