@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(LotusDbContext))]
-    partial class LotusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210118095214_UpdateCustomerModel")]
+    partial class UpdateCustomerModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +37,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Role")
@@ -54,7 +55,7 @@ namespace Infrastructure.Migrations
                             Id = 1,
                             EmailAddress = "pieter@test.test",
                             Name = "Pieter",
-                            Password = "$2a$12$f/5501xRea8XkLeVzmp28ObnFaa/7qQIsXfGIVJLwsIWVNWiP/o4a",
+                            Password = "$2a$12$96xrUHr3ZvKTXYHRAX0SHudg7D4TwP85B2yR7EZqJ9OoBfPy.ovJa",
                             Role = 0
                         },
                         new
@@ -62,7 +63,7 @@ namespace Infrastructure.Migrations
                             Id = 2,
                             EmailAddress = "kek@double.you",
                             Name = "Jorik",
-                            Password = "$2a$12$Yk8sFwVt2YY3NwLIqwCAkO1HAKVTp7O7XTmLV028.iJBKfxskA6Wq",
+                            Password = "$2a$12$4GxR5siwunCkOkh64XnNMOQhTG2yuK0FC4oVz10jhPZzxIXDoQQy.",
                             Role = 0
                         });
                 });
@@ -156,7 +157,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = 1,
                             EmailAddress = "admin@lotus.nl",
-                            Password = "$2a$12$2TB8pF4ymQNx5AIAzeLZ7OC3VKkTI97XuwUiaeA5e4kGq8sK/m8l2",
+                            Password = "$2a$12$iYOTFRWCkzDhZ6n9.n96FO.DWzutNygdhTqtaECqvIxzWDlTZVzCS",
                             Role = 5,
                             UserName = "Admin"
                         },
@@ -164,7 +165,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = 2,
                             EmailAddress = "jeff@memberson.nl",
-                            Password = "$2a$12$H6nt59pGYF01Xa/BBV.FXOTwmpbBmclNHjeyTmV9TZhrJQJpHqwfK",
+                            Password = "$2a$12$sBCEpDWEuxJrdhuunScodeQzjqp8lq/kck8Z8LhtwoSbseeldnqo6",
                             Role = 1,
                             UserName = "Jeff Memberson"
                         },
@@ -172,7 +173,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = 3,
                             EmailAddress = "pad.jetty@okayvoorzee.nl",
-                            Password = "$2a$12$0ZekQrCzeKZ563pEbWKDOOZjTNHy6XzWJuMn1It3ZVG7l6PG9NQK6",
+                            Password = "$2a$12$p4gEha4LIX8RKkoBs2dz/eaDJj88t2eVvADpsBK0hS5rYhbhTMoz6",
                             Role = 2,
                             UserName = "Pad Jetty"
                         },
@@ -180,7 +181,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = 4,
                             EmailAddress = "sensu.overdijk@hotmail.nl",
-                            Password = "$2a$12$pvfdPNJL611bN/dkqkG76OJrCY7Ddxck4eX6wdLN0w4iIhwB72Sli",
+                            Password = "$2a$12$sIwOmLEWrb9sJsrejfkP.eRh2bTrc8SE8FMPNHV4xDxXpTvqYdG8a",
                             Role = 3,
                             UserName = "Sensu Overdijk"
                         },
@@ -188,7 +189,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = 5,
                             EmailAddress = "bill.versteen@zig.nl",
-                            Password = "$2a$12$tXlwgK3aumtqxXzqHwb08OhXdxqsnm2xHn29abssheg8vLFLoGgve",
+                            Password = "$2a$12$vnDlJGZxlNiRwRWM6cXMRuci9N4Cc4URNH/9qYZxqsg6tSi0OPG/K",
                             Role = 4,
                             UserName = "Bill Versteen"
                         });
