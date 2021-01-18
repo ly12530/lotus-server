@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
 using RestApi.Mappers;
@@ -43,10 +42,9 @@ namespace RestApi.Controllers
         /// </summary>
         /// <returns>List of all Customers</returns>
         /// <response code="200"/>
-        /// <response code="403"/>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [AllowAnonymous]
         public ActionResult<List<Customer>> GetAll()
         {
             var result = _customerRepository.GetAllCustomers();

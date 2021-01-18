@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
@@ -46,6 +47,16 @@ namespace Infrastructure
         public async Task UpdateRequest(Request request)
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteRequest(Request request)
+        {
+
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
+            _context.Requests.Remove(request);
+            await _context.SaveChangesAsync();
+
         }
 
     }
