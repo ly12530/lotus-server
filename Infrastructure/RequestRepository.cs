@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
@@ -52,12 +53,11 @@ namespace Infrastructure
         {
             var result = await _context.Requests.FirstOrDefaultAsync(r => r.Id == request.Id);
 
-            if(result != null)
-            {
-                _context.Requests.Remove(result);
-                await _context.SaveChangesAsync();
-            }
-            
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
+            _context.Requests.Remove(request);
+            await _context.SaveChangesAsync();
+
         }
 
     }

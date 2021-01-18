@@ -391,7 +391,7 @@ namespace RestApi.Controllers
             if(request != null)
             {
                 await _requestRepository.DeleteRequest(request);
-                return Ok();
+                return Ok(request);
             }
 
             return BadRequest();
