@@ -11,5 +11,6 @@ namespace Core.DomainServices
         Task RegisterCustomer(Customer newCustomer);
         Task<Customer> GetCustomerById(int id);
         Task<Customer> GetCustomerByEmail(string email);
+        Task UpdatePassword(Customer customer);
     }
 }

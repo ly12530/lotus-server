@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
 using RestApi.Mappers;
@@ -135,8 +136,7 @@ namespace RestApi.Controllers
                 var foundCustomer = await _customerRepository.GetCustomerByEmail(loginDto.EmailAddress);
 
                 if (foundCustomer == null) return Unauthorized();
-
-
+                
                 if (Verify(loginDto.Password, foundCustomer.Password))
                 {
                     var mappedFoundCustomer = CustomerMapper.ToCustomerAuthDTO(foundCustomer);
@@ -149,6 +149,40 @@ namespace RestApi.Controllers
             }
 
             return Unauthorized();
+        }
+
+        /// <summary>
+        /// Update the Customers Password
+        /// </summary>
+        /// <param name="updateCustomerPassword">Body with attributes to update the Customers Password</param>
+        /// <returns>Message if Password was successfully updated</returns>
+        [HttpPut("change-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<string>> UpdatePassword(UpdateCustomerPasswordDTO updateCustomerPassword)
+        {
+            if (ModelState.IsValid)
+            {
+                var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var jwtToken = authHeader.Split(" ")[1];
+
+                var customerId = GetCustomerIdFromJSONWebToken(jwtToken);
+
+                var customer = await _customerRepository.GetCustomerById(customerId);
+
+                var newHashedPassword = ValidateAndReplacePassword(updateCustomerPassword.OldPassword, customer.Password,
+                    updateCustomerPassword.NewPassword, 12);
+
+                customer.Password = newHashedPassword;
+
+                await _customerRepository.UpdatePassword(customer);
+
+                return Ok("Password successfully updated");
+            }
+
+            return BadRequest("Password failed to update");
         }
         
         /// <summary>
@@ -175,6 +209,19 @@ namespace RestApi.Controllers
                 signingCredentials: credentials);    
     
             return new JwtSecurityTokenHandler().WriteToken(token);    
+        }
+
+        /// <summary>
+        /// Get the CustomerId from the JWT-Token
+        /// </summary>
+        /// <param name="jwtToken">JWT-Token</param>
+        /// <returns>CustomerId of the current authenticated Customer</returns>
+        private int GetCustomerIdFromJSONWebToken(string jwtToken)
+        {
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(jwtToken);
+            var customerClaim = token.Claims.First(c => c.Type == "CustomerId");
+
+            return Int32.Parse(customerClaim.Value);
         }
     }
 }

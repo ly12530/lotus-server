@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
@@ -35,6 +36,14 @@ namespace Infrastructure
         public async Task<Customer> GetCustomerByEmail(string email)
         {
             return await _context.Customers.SingleOrDefaultAsync(cust => cust.EmailAddress == email);
+        }
+
+        public async Task UpdatePassword(Customer customer)
+        {
+            if (customer == null) throw new ArgumentNullException(nameof(customer));
+
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
         }
     }
 }
