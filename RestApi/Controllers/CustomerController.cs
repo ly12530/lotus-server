@@ -156,6 +156,9 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="updateCustomerPassword">Body with attributes to update the Customers Password</param>
         /// <returns>Message if Password was successfully updated</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
+        /// <response code="401"/>
         [HttpPut("change-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

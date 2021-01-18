@@ -376,6 +376,9 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="notifyRequest">Body with the attributes for notifications</param>
         /// <returns>Message if request was send successfully</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
+        /// <response code"403"/>
         [HttpPost("notify-interests")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
