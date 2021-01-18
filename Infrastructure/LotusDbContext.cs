@@ -21,6 +21,7 @@ namespace Infrastructure
             modelBuilder.Entity<Customer>().Property(customer => customer.Name).IsRequired();
             modelBuilder.Entity<Customer>().Property(customer => customer.EmailAddress).IsRequired();
             modelBuilder.Entity<Customer>().HasIndex(customer => customer.EmailAddress).IsUnique();
+            modelBuilder.Entity<Customer>().Property(customer => customer.Password).IsRequired();
             modelBuilder.Entity<Customer>().HasData(
                 new Customer {Id = 1, Name = "Pieter", EmailAddress = "pieter@test.test", Password = HashPassword("SuperEnjoying!123", 12)},
                 new Customer {Id = 2, Name = "Jorik", EmailAddress = "kek@double.you", Password = HashPassword("NotEnjoying!321", 12)}
