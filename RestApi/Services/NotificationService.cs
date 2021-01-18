@@ -66,12 +66,11 @@ namespace RestApi.Services
             message.Subject = $"{openedRequest.Customer.Name} heeft een nieuwe aanvraag toegevoegd";
             message.Body = new TextPart("plain")
             {
-                Text = $@"Geachte inzetcoördinatoren,
+                Text = $@"Geachte inzetcoördinaat,
 
 {openedRequest.Customer.Name} heeft een nieuwe aanvraag {openedRequest.Title} aangemaakt.
 
- 
--- Sent using MailKit"
+-- Dit is een automatische notificatie"
                 
             };
 
