@@ -43,22 +43,17 @@ jobs:
     needs: migrations
     if: github.ref == 'refs/heads/master'
 
-    strategy:
-      matrix:
-        heroku_api: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app: ${{ secrets.HEROKU_APP_NAME }}
-
     steps:
     - uses: actions/checkout@v2
     - name: Login to Heroku
       env:
-        HEROKU_API_KEY: ${{ matrix.heroku_api }}
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: docker container:login
     - name: Build and push to Heroku
       env: 
-        HEROKU_API_KEY: ${{ matrix:heroku_api }}
-      run: heroku container:push -a ${{ matrix.heroku_app }} web
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web
     - name: Deploy on Heroku
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_APP_NAME }} web
-      run: heroku container:release -a ${{ matrix.heroku_app }} web 
+      run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web 
