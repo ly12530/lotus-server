@@ -48,5 +48,17 @@ namespace Infrastructure
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteRequest(Request request)
+        {
+            var result = await _context.Requests.FirstOrDefaultAsync(r => r.Id == request.Id);
+
+            if(result != null)
+            {
+                _context.Requests.Remove(result);
+                await _context.SaveChangesAsync();
+            }
+            
+        }
+
     }
 }

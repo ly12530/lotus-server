@@ -371,6 +371,25 @@ namespace RestApi.Controllers
             return BadRequest();
         }
 
+        [HttpDelete("{id}/delete")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
+        public async Task<ActionResult> DeleteRequest(int id)
+        {
+
+            var request = await _requestRepository.GetRequestById(id);
+
+            if(request != null)
+            {
+                await _requestRepository.DeleteRequest(request);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         /// <summary>
         /// Send request with notification to user
         /// </summary>
