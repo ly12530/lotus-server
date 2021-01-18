@@ -51,7 +51,6 @@ namespace Infrastructure
 
         public async Task DeleteRequest(Request request)
         {
-            var result = await _context.Requests.FirstOrDefaultAsync(r => r.Id == request.Id);
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
