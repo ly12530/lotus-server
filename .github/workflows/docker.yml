@@ -55,5 +55,5 @@ jobs:
       run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} web
     - name: Deploy on Heroku
       env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_APP_NAME }} web
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_NAME }}
       run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web 
