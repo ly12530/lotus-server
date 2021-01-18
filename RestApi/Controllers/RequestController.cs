@@ -188,10 +188,9 @@ namespace RestApi.Controllers
 
                     await _requestRepository.AddRequest(requestToCreate);
 
-                    var bettingCoors = _userRepository.GetAllUsers().Where(u => u.Role == Role.BettingCoordinator)
-                        .ToList();
+                    var bettingCoor = await _userRepository.GetAllUsers().FirstAsync(u => u.Role == Role.BettingCoordinator);
 
-                    await _notificationService.SendNewRequestNotification(requestToCreate, bettingCoors);
+                    await _notificationService.SendNewRequestNotification(requestToCreate, bettingCoor);
                     
                     return CreatedAtAction(nameof(GetOne), new {id = requestToCreate.Id}, requestToCreate);
                 }

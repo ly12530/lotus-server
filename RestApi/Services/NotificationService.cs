@@ -51,17 +51,14 @@ namespace RestApi.Services
             return true;
         }
 
-        public async Task<bool> SendNewRequestNotification(Request openedRequest, List<User> bettingCoordinators)
+        public async Task<bool> SendNewRequestNotification(Request openedRequest, User bettingCoordinator)
         {
-            if (openedRequest == null && bettingCoordinators == null || openedRequest == null ||
-                bettingCoordinators == null) throw new NullReferenceException();
+            if (openedRequest == null && bettingCoordinator == null || openedRequest == null ||
+                bettingCoordinator == null) throw new NullReferenceException();
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Lotus Notifier", _config["Mail:Email"]));
-            foreach (var bettingCoordinator in bettingCoordinators)
-            {
-                message.To.Add(new MailboxAddress(bettingCoordinator.UserName, bettingCoordinator.EmailAddress));
-            }
+            message.To.Add(new MailboxAddress(bettingCoordinator.UserName, bettingCoordinator.EmailAddress));
 
             message.Subject = $"{openedRequest.Customer.Name} heeft een nieuwe aanvraag toegevoegd";
             message.Body = new TextPart("plain")
