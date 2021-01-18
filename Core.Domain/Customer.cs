@@ -14,8 +14,12 @@ namespace Core.Domain
 
         public string Name { get; set; }
 
+        public Role Role { get; set; } = Role.Customer;
+
         [EmailAddress] 
         public string EmailAddress { get; set; }
+        
+        public string Password { get; set; }
         
         public ICollection<Request> Requests { get; set; } = new List<Request>();
     }
