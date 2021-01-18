@@ -177,7 +177,7 @@ namespace RestApi.Controllers
         /// </summary>
         /// <param name="userAuth">Mapped Users which is authenticated</param>
         /// <param name="role">Display name of the role</param>
-        /// <returns></returns>
+        /// <returns>Generated JWT Token</returns>
         private string GenerateJSONWebToken(MapUserAuthDTO userAuth, string role)    
         {    
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));    
