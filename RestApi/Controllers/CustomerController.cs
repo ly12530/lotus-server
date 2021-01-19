@@ -47,9 +47,11 @@ namespace RestApi.Controllers
         [AllowAnonymous]
         public ActionResult<List<Customer>> GetAll()
         {
-            var result = _customerRepository.GetAllCustomers();
+            var customers = _customerRepository.GetAllCustomers();
+
+            var mappedCustomers = CustomerMapper.MapToCustomerDTOList(customers.ToList());
             
-            return Ok(result);
+            return Ok(mappedCustomers);
 
         }
 
@@ -72,7 +74,9 @@ namespace RestApi.Controllers
 
             result.Requests = _requestRepository.GetAllRequests().Where(res => res.CustomerId == id).ToList();
 
-            return (result == null) ? NotFound() : Ok(result);
+            var mappedResult = CustomerMapper.MapToCustomerDTO(result);
+
+            return (result == null) ? NotFound() : Ok(mappedResult);
         }
 
         /// <summary>
@@ -104,7 +108,7 @@ namespace RestApi.Controllers
 
                     await _customerRepository.RegisterCustomer(customerToRegister);
 
-                    var mappedCustomer = CustomerMapper.ToCustomerAuthDTO(customerToRegister);
+                    var mappedCustomer = CustomerMapper.MapToCustomerAuthDTO(customerToRegister);
 
                     mappedCustomer.Token =
                         GenerateJSONWebToken(mappedCustomer, customerToRegister.Role.GetDisplayName());
@@ -137,7 +141,7 @@ namespace RestApi.Controllers
                 
                 if (Verify(loginDto.Password, foundCustomer.Password))
                 {
-                    var mappedFoundCustomer = CustomerMapper.ToCustomerAuthDTO(foundCustomer);
+                    var mappedFoundCustomer = CustomerMapper.MapToCustomerAuthDTO(foundCustomer);
 
                     mappedFoundCustomer.Token =
                         GenerateJSONWebToken(mappedFoundCustomer, foundCustomer.Role.GetDisplayName());
