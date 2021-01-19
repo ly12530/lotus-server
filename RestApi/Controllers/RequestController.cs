@@ -370,10 +370,11 @@ namespace RestApi.Controllers
             
             return BadRequest();
         }
+       
         /// <summary>
         /// Delete a specific request by id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id of the request</param>
         /// <returns></returns>
         /// <response code="200"/>
         /// <response code="400"/>
@@ -398,13 +399,70 @@ namespace RestApi.Controllers
         }
 
         /// <summary>
+        /// Delete user from request.
+        /// </summary>
+        /// <param name="id">Id from Request</param>
+        /// <returns>Returns updated request</returns>
+        [HttpDelete("{id}/delete-user-from-request")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Policy = "AdminAndBettingMasterOnly")]
+        public async Task<ActionResult> DeleteUserFromRequest(int id)
+        {
+            var request = await _requestRepository.GetRequestById(id);         
+
+            if (request != null)
+            {
+                request.DesignatedUser = null;
+                await _requestRepository.UpdateRequest(request);
+                request.Customer = await _customerRepository.GetCustomerById(request.CustomerId);
+                var reqResource = RequestMapper.MapToRequestDTO(request);
+                
+                return Ok(reqResource);
+            }
+
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Send request with notification to user
+        /// </summary>
+        /// <param name="id">Id of the request</param>
+        /// <returns>Message if request was send successfully</returns>
+        /// <response code="200"/>
+        /// <response code="400"/>
+        /// <response code="403"/>
+        [HttpPost("notify-unassign")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<string>> SendUnassignNotification(int id)
+        {
+            var request = await _requestRepository.GetRequestById(id);
+            var sender = request.DesignatedUser;
+            var bettingCoor = await _userRepository.GetAllUsers().FirstAsync(u => u.Role == Role.BettingCoordinator);          
+            
+            try
+            {
+                await _notificationService.SendUnassignNotification(sender, bettingCoor, request);
+            }
+            catch
+            {
+                return BadRequest("Notification failed");
+            }
+
+            return Ok("Notification send");
+        }
+
+        /// <summary>
         /// Send request with notification to user
         /// </summary>
         /// <param name="notifyRequest">Body with the attributes for notifications</param>
         /// <returns>Message if request was send successfully</returns>
         /// <response code="200"/>
         /// <response code="400"/>
-        /// <response code"403"/>
+        /// <response code="403"/>
         [HttpPost("notify-interests")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
