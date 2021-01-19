@@ -375,7 +375,7 @@ namespace RestApi.Controllers
         /// Delete a specific request by id
         /// </summary>
         /// <param name="id">Id of the request</param>
-        /// <returns></returns>
+        /// <returns>Request which was deleted</returns>
         /// <response code="200"/>
         /// <response code="400"/>
         /// <response code="403"/>
