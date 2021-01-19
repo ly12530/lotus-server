@@ -56,5 +56,6 @@ namespace Infrastructure
         {
             return _context.Users.Where(g => g.Role == role);
         }
+
     }
 }

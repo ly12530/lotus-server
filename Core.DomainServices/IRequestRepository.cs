@@ -14,5 +14,7 @@ namespace Core.DomainServices
         IEnumerable<Request> GetOpenRequests();
         Task DeleteRequest(Request request);
 
+      
+
     }
 }
