@@ -81,5 +81,37 @@ namespace RestApi.Services
             
             return true;
         }
+
+        public async Task<bool> SendUnassignNotification(User sender, User bettingCoordinator, Request request)
+        {
+            if (sender == null && bettingCoordinator == null && request == null|| bettingCoordinator == null || sender == null || request == null)
+                throw new NullReferenceException();
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Lotus Notifier", _config["Mail:Email"]));
+            message.To.Add(new MailboxAddress(bettingCoordinator.UserName, bettingCoordinator.EmailAddress));
+            message.Subject = $"{request.DesignatedUser.UserName} heeft een verzoek tot afmelding ingediend bij {request.Title}";
+
+                message.Body = new TextPart("plain")
+                {
+                    Text = $@"Geachte inzetcoördinator,
+
+{request.DesignatedUser.UserName} heeft een verzoek tot afmelding ingediend bij {request.Title}.
+
+-- Dit is een automatische notificatie"
+
+                };
+
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(_config["Mail:Server"], Int32.Parse(_config["Mail:Port"]), SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+            
+
+            return true;
+        }
     }
 }

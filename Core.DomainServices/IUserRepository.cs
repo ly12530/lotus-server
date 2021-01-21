@@ -14,5 +14,6 @@ namespace Core.DomainServices
         Task UpdateUser(User user);
         IQueryable<User> GetUsers();
         IEnumerable<User> GetUserByRole(Role role);
+
     }
 }

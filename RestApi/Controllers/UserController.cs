@@ -154,6 +154,7 @@ namespace RestApi.Controllers
 
             return Unauthorized();
         }
+        
 
         /// <summary>
         /// Get a specific user by it's ID
