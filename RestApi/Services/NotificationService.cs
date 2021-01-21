@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Domain;
@@ -9,7 +8,7 @@ using Core.DomainServices;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
-using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using MailKit.Net.Smtp;
 
 namespace RestApi.Services
 {
