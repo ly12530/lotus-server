@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
-using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace RestApi.Services
 {
@@ -45,7 +46,7 @@ namespace RestApi.Services
                     await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);
-                }    
+                }
             }
             
             return true;
@@ -82,9 +83,9 @@ namespace RestApi.Services
             return true;
         }
 
-        public async Task<bool> SendUnassignNotification(User sender, User bettingCoordinator, Request request)
+        public async Task<bool> SendUnassignNotification(User bettingCoordinator, Request request)
         {
-            if (sender == null && bettingCoordinator == null && request == null|| bettingCoordinator == null || sender == null || request == null)
+            if (bettingCoordinator == null && request == null|| bettingCoordinator == null || request == null)
                 throw new NullReferenceException();
 
             var message = new MimeMessage();
@@ -92,25 +93,24 @@ namespace RestApi.Services
             message.To.Add(new MailboxAddress(bettingCoordinator.UserName, bettingCoordinator.EmailAddress));
             message.Subject = $"{request.DesignatedUser.UserName} heeft een verzoek tot afmelding ingediend bij {request.Title}";
 
-                message.Body = new TextPart("plain")
-                {
-                    Text = $@"Geachte inzetcoördinator,
+            message.Body = new TextPart("plain")
+            {
+                Text = $@"Geachte inzetcoördinator,
 
 {request.DesignatedUser.UserName} heeft een verzoek tot afmelding ingediend bij {request.Title}.
 
 -- Dit is een automatische notificatie"
 
-                };
+            };
 
-                using (var client = new SmtpClient())
-                {
-                    await client.ConnectAsync(_config["Mail:Server"], Int32.Parse(_config["Mail:Port"]), SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
-                    await client.SendAsync(message);
-                    await client.DisconnectAsync(true);
-                }
-            
-
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(_config["Mail:Server"], Int32.Parse(_config["Mail:Port"]), SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_config["Mail:Email"], _config["Mail:Password"]);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+                
             return true;
         }
     }

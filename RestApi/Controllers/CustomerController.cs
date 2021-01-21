@@ -177,8 +177,17 @@ namespace RestApi.Controllers
 
                 var customer = await _customerRepository.GetCustomerById(customerId);
 
-                var newHashedPassword = ValidateAndReplacePassword(updateCustomerPassword.OldPassword, customer.Password,
-                    updateCustomerPassword.NewPassword, 12);
+                string newHashedPassword;
+                
+                try
+                {
+                    newHashedPassword = ValidateAndReplacePassword(updateCustomerPassword.OldPassword, customer.Password,
+                        updateCustomerPassword.NewPassword, 12);
+                }
+                catch
+                {
+                    return Problem("Current password invalid");
+                }
 
                 customer.Password = newHashedPassword;
 
@@ -187,7 +196,7 @@ namespace RestApi.Controllers
                 return Ok("Password successfully updated");
             }
 
-            return BadRequest("Password failed to update");
+            return BadRequest();
         }
         
         /// <summary>
