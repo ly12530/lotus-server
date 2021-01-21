@@ -13,8 +13,5 @@ namespace Core.DomainServices
         Task UpdateRequest(Request request);   
         IEnumerable<Request> GetOpenRequests();
         Task DeleteRequest(Request request);
-
-      
-
     }
 }
