@@ -440,12 +440,11 @@ namespace RestApi.Controllers
         public async Task<ActionResult<string>> SendUnassignNotification(int id)
         {
             var request = await _requestRepository.GetRequestById(id);
-            var sender = request.DesignatedUser;
             var bettingCoor = await _userRepository.GetAllUsers().FirstAsync(u => u.Role == Role.BettingCoordinator);          
             
             try
             {
-                await _notificationService.SendUnassignNotification(sender, bettingCoor, request);
+                await _notificationService.SendUnassignNotification(bettingCoor, request);
             }
             catch
             {
