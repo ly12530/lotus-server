@@ -3,20 +3,30 @@
 # lotus-server
 A RESTful backend API for the LOTUS 2021 project
 
-### [Requirements](#Requirements) | [Installation](#Installation)
+### [Requirements](#Requirements) | [Installation](#Installation) | [Team members](#Team Members)
 
 ## Requirements
 * .NET 5.0
 * Postgres 12 (or later)
 
 ## Installation
-In order to start future development of this .NET Core project, you'll have to follow
-the following steps:
+### Option 1 (normal):
+1. Unzip the `.zip` file containing this project.
+2. Open your terminal in the folder containing the `.sln` file.
+3. Execute the following command: `dotnet run -p RestApi`.
 
-1. Clone this project using `git clone https://github.com/Crypit-Coders-Inc/lotus-server.git`
-2. Open the folder where the `lotus-server.sln` is located
-3. Restore the packages using `dotnet restore`
-4. Open your favourite editor and start developing
+### Options 2 (containerized):
+1. Unzip the `.zip` file containing this project.
+2. Open your terminal in the folder containing the `.sln` file.
+3. Execute the following command: `docker build lotus21-api .`.
+4. Execute the following command: `docker run --name lotus21_api -p 5000:80 -d [container_id]`.
 
-## License
-None specified yet
+## Team Members
+* [Elco Mussert](https://github.com/elco2000)
+* [Joris Wessels](https://github.com/JorisWessels)
+* [Maas Ekkel](https://github.com/mordar-20)
+* [Jorik Leemans](https://github.com/JorikLeemans)
+* [Zareta Usmaeva](https://github.com/zazet)
+* [Marci Ngasiman](https://github.com/MarcianoN)
+* [Mark Sander](https://github.com/MarkSander)
+* [Nick Kuijstermans](https://github.com/BootBoost)
