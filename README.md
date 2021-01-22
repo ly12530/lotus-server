@@ -3,7 +3,7 @@
 # lotus-server
 A RESTful backend API for the LOTUS 2021 project
 
-### [Requirements](#Requirements) | [Installation](#Installation) | [Team members](#Team Members)
+### [Requirements](#Requirements) | [Installation](#Installation) | [Team Members](#Team-Members)
 
 ## Requirements
 * .NET 5.0
@@ -21,7 +21,7 @@ A RESTful backend API for the LOTUS 2021 project
 3. Execute the following command: `docker build lotus21-api .`.
 4. Execute the following command: `docker run --name lotus21_api -p 5000:80 -d [container_id]`.
 
-## Team Members
+## Team-Members
 * [Elco Mussert](https://github.com/elco2000)
 * [Joris Wessels](https://github.com/JorisWessels)
 * [Maas Ekkel](https://github.com/mordar-20)
