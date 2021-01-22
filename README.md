@@ -2,6 +2,7 @@
 ![Postgres-shield](https://img.shields.io/badge/Postgres-12+-blue?style=for-the-badge&logo=postgresql)
 # lotus-server
 A RESTful backend API for the LOTUS 2021 project
+<br/>_https://lotus21-api.herokuapp.com_
 
 ### [Requirements](#Requirements) | [Installation](#Installation) | [Team Members](#Team-Members)
 
