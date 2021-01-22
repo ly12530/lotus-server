@@ -19,7 +19,7 @@ A RESTful backend API for the LOTUS 2021 project
 ### Options 2 (containerized):
 1. Unzip the `.zip` file containing this project.
 2. Open your terminal in the folder containing the `.sln` file.
-3. Execute the following command: `docker build lotus21-api .`.
+3. Execute the following command: `docker build .`.
 4. Execute the following command: `docker run --name lotus21_api -p 5000:80 -d [container_id]`.
 
 ## Team-Members
