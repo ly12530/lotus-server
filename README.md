@@ -4,7 +4,7 @@
 A RESTful backend API for the LOTUS 2021 project
 <br/>_https://lotus21-api.herokuapp.com_
 
-### [Requirements](#Requirements) | [Installation](#Installation) | [Team Members](#Team-Members)
+### [Requirements](#Requirements) | [Installation](#Installation)
 
 ## Requirements
 * .NET 5.0
@@ -21,13 +21,3 @@ A RESTful backend API for the LOTUS 2021 project
 2. Open your terminal in the folder containing the `.sln` file.
 3. Execute the following command: `docker build .`.
 4. Execute the following command: `docker run --name lotus21_api -p 5000:80 -d [container_id]`.
-
-## Team-Members
-* [Elco Mussert](https://github.com/elco2000)
-* [Joris Wessels](https://github.com/JorisWessels)
-* [Maas Ekkel](https://github.com/mordar-20)
-* [Jorik Leemans](https://github.com/JorikLeemans)
-* [Zareta Usmaeva](https://github.com/zazet)
-* [Marci Ngasiman](https://github.com/MarcianoN)
-* [Mark Sander](https://github.com/MarkSander)
-* [Nick Kuijstermans](https://github.com/BootBoost)
